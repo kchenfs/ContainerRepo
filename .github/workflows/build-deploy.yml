@@ -19,23 +19,21 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-        aws-account-id: ${{ secrets.AWS_ACCOUNT_ID }}
-
 
     - name: Build Docker Image
       run: |
         cd ContainerWebsite
         # Build your Docker image here
         docker build -t my-website-image:latest .
-        
+
     - name: Push Docker Image to ECR
-      run: |        
+      run: |
         # Tag the Docker image with the ECR repository URL
         docker tag my-website-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
 
         # Push the Docker image to ECR
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
-    
+
     - name: Update ECS Task Definition
       run: |
         # Update your ECS task definition to use the new image
@@ -44,7 +42,7 @@ jobs:
           --container-definitions '[
             {
               "name": "web",
-              "image": "'${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest'",
+              "image": "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest",
               "memory": 512,
               "cpu": 256,
               "portMappings": [
@@ -62,5 +60,4 @@ jobs:
         # Trigger an ECS service update to apply the changes
         aws ecs update-service \
           --cluster personal-website-cluster \
-          --service your-personal_website_service
-  
+          --service personal-website-service
