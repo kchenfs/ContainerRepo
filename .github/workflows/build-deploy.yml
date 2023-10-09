@@ -24,7 +24,6 @@ jobs:
       run: |
         pwd
         ls -al
-        cd ContainerWebsite
         # Build your Docker image here
         docker build -t my-website-image:latest .
 
