@@ -27,6 +27,11 @@ jobs:
         # Build your Docker image here
         docker build -t my-website-image:latest .
 
+    - name: Authenticate with ECR
+      run: |
+        # Authenticate Docker with your AWS account
+        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
+
     - name: Push Docker Image to ECR
       run: |
         # Tag the Docker image with the ECR repository URL
