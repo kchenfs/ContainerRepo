@@ -20,6 +20,11 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
+    - name: Authenticate with ECR
+      run: |
+        # Authenticate Docker with your AWS account
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com
+
     - name: Build Docker Image
       run: |
         pwd
@@ -27,16 +32,13 @@ jobs:
         # Build your Docker image here
         docker build -t my-website-image:latest .
 
-    - name: Authenticate with ECR
-      run: |
-        # Authenticate Docker with your AWS account
-        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
-
-    - name: Push Docker Image to ECR
+    - name: Tag Docker Image
       run: |
         # Tag the Docker image with the ECR repository URL
         docker tag my-website-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
 
+    - name: Push Docker Image to AWS ECR
+      run: |
         # Push the Docker image to ECR
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
 
@@ -45,21 +47,19 @@ jobs:
         # Update your ECS task definition to use the new image
         aws ecs register-task-definition \
           --family personal-website \
-          --container-definitions '[
-            {
-              "name": "web",
-              "image": "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest",
-              "memory": 512,
-              "cpu": 256,
-              "portMappings": [
-                {
-                  "containerPort": 80,
-                  "hostPort": 80,
-                  "protocol": "tcp"
-                }
-              ]
-            }
-          ]'
+          --container-definitions "[{
+            \"name\": \"web\",
+            \"image\": \"${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest\",
+            \"memory\": 512,
+            \"cpu\": 256,
+            \"portMappings\": [
+              {
+                \"containerPort\": 80,
+                \"hostPort\": 80,
+                \"protocol\": \"tcp\"
+              }
+            ]
+          }]"
 
     - name: Update ECS Service
       run: |
