@@ -123,11 +123,11 @@ resource "aws_ecs_task_definition" "personal_website_task" {
     cpu_architecture        = "X86_64"
   }
 
-  container_definitions = <<EOF
+container_definitions = <<EOF
 [
   {
     "name": "web",
-    "image": "798965869505.dkr.ecr.ca-central-1.amazonaws.com/container-repo:latestnginx:latest",
+    "image": "798965869505.dkr.ecr.ca-central-1.amazonaws.com/container-repo:latest",
     "cpu": 256,
     "portMappings": [
       {
@@ -147,7 +147,7 @@ resource "aws_ecs_task_definition" "personal_website_task" {
   }
 ]
 EOF
-}
+
 
 # Create an ECS Service
 resource "aws_ecs_service" "personal_website_service" {
