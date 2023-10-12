@@ -135,7 +135,15 @@ resource "aws_ecs_task_definition" "personal_website_task" {
         "hostPort": 80,
         "protocol": "tcp"
       }
-    ]
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "container-website-log-group",
+        "awslogs-region": "ca-central-1",
+        "awslogs-stream-prefix" : "personal_website"
+      }
+    }
   }
 ]
 EOF
@@ -158,15 +166,10 @@ resource "aws_ecs_service" "personal_website_service" {
 }
 
 
-
 output "ecs_service_name" {
   value = aws_ecs_service.personal_website_service.name
 }
 
-
-resource "aws_cloudwatch_log_group" "personal_website_log_group" {
-  name = "PersonalWebsite"
-}
 
 resource "aws_route53_zone" "main" {
   name    = "kchenfs.com"
@@ -187,26 +190,6 @@ resource "aws_ecr_repository" "personal_website_repo" {
 }
 
 
-resource "aws_iam_policy" "cloudwatch_logs_policy" {
-  name = "cloudwatch-logs-policy"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ],
-        Effect   = "Allow",
-        Resource = "*"
-      }
-    ]
-  })
-}
-
-
 resource "aws_iam_role" "ecs_execution_role" {
   name = "ecs-execution-role"
 
@@ -224,7 +207,8 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "cloudwatch_logs_attachment" {
-  policy_arn = aws_iam_policy.cloudwatch_logs_policy.arn
-  role       = aws_iam_role.ecs_execution_role.name
+
+resource "aws_cloudwatch_log_group" "fargate_log_group" {
+  name              = "container-website-log-group"
+  retention_in_days = 7 # Set your desired retention period in days
 }
