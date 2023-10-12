@@ -127,7 +127,7 @@ resource "aws_ecs_task_definition" "personal_website_task" {
 [
   {
     "name": "web",
-    "image": "nginx:latest",
+    "image": "798965869505.dkr.ecr.ca-central-1.amazonaws.com/container-repo:latestnginx:latest",
     "cpu": 256,
     "portMappings": [
       {
@@ -157,7 +157,7 @@ resource "aws_ecs_service" "personal_website_service" {
   launch_type            = "FARGATE"
   platform_version       = "LATEST"
   enable_execute_command = true
-  desired_count          = 0
+  desired_count          = 1
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
