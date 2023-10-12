@@ -79,34 +79,42 @@ resource "aws_iam_role" "ecs_task_role" {
   })
 }
 
-# Create an IAM policy for ECS TASK
-resource "aws_iam_policy" "ecs_exec_policy" {
-  name        = "ECSExecPolicy"
-  description = "Policy for ECS Task Role"
+resource "aws_iam_policy" "combined_policy" {
+  name        = "CombinedECSPolicy"
+  description = "Combined policy for ECS Task Role"
 
-  # Define the policy document
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
       {
-        Action = [
+        Action   = [
+          
           "ssmmessages:CreateControlChannel",
           "ssmmessages:CreateDataChannel",
           "ssmmessages:OpenControlChannel",
           "ssmmessages:OpenDataChannel"
         ],
         Effect   = "Allow",
-        Resource = "*"
-      }
-    ]
+        Resource = "*",
+      },
+    ],
   })
 }
 
+
+
 # Attach the ECS Exec policy to the ECS task role
 resource "aws_iam_role_policy_attachment" "ecs_task_attachment" {
-  policy_arn = aws_iam_policy.ecs_exec_policy.arn
+  policy_arn = aws_iam_policy.combined_policy.arn
   role       = aws_iam_role.ecs_task_role.name
 }
+
+
+
+
+
+
+
 
 
 # Create an ECS Task Definition
@@ -158,7 +166,7 @@ resource "aws_ecs_service" "personal_website_service" {
   launch_type            = "FARGATE"
   platform_version       = "LATEST"
   enable_execute_command = true
-  desired_count          = 1
+  desired_count          = 2
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
@@ -224,38 +232,6 @@ resource "aws_iam_policy" "ecs_execution_role_policy" {
 resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attachment" {
   policy_arn = aws_iam_policy.ecs_execution_role_policy.arn
   role       = aws_iam_role.ecs_execution_role.name
-}
-
-
-resource "aws_iam_role_policy_attachment" "ecs_execution_role_ecr_policy_attachment" {
-  policy_arn = aws_iam_policy.ecs_execution_role_policy.arn
-  role       = aws_iam_role.ecs_execution_role.name
-}
-
-resource "aws_iam_role_policy" "ecs_execution_role_ecr_policy" {
-  name = "ECSExecutionRoleECRPolicy"
-  role = aws_iam_role.ecs_execution_role.id
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchCheckLayerAvailability",
-          "ecr:GetAuthorizationToken",
-          "ecr:GetRepositoryPolicy",
-          "ecr:DescribeRepositories",
-          "ecr:GetRepositoryPolicy",
-          "ecr:ListImages",
-          "ecr:DescribeImages",
-          "ecr:GetImage",
-        ],
-        Effect   = "Allow",
-        Resource = "*",
-      },
-    ],
-  })
 }
 
 
