@@ -114,7 +114,7 @@ resource "aws_ecs_task_definition" "personal_website_task" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   task_role_arn            = aws_iam_role.ecs_task_role.arn
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn 
   cpu                      = 256
   memory                   = 512
   pid_mode                 = "task"
@@ -157,7 +157,7 @@ resource "aws_ecs_service" "personal_website_service" {
   launch_type            = "FARGATE"
   platform_version       = "LATEST"
   enable_execute_command = true
-  desired_count          = 0
+  desired_count          = 1
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
@@ -207,8 +207,32 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
+resource "aws_iam_policy" "ecs_execution_role_policy" {
+  name        = "ECSExecutionRolePolicy"
+  description = "Policy for ECS Execution Role"
 
-resource "aws_cloudwatch_log_group" "fargate_log_group" {
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          # Add other actions if needed
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attachment" {
+  policy_arn = aws_iam_policy.ecs_execution_role_policy.arn
+  role       = aws_iam_role.ecs_execution_role.name
+}
+
+resource "aws_cloudwatch_log_group" "contaer_log_group" {
   name              = "container-website-log-group"
   retention_in_days = 7 # Set your desired retention period in days
 }

@@ -1,11 +1,11 @@
-# Use an official Nginx runtime as the base image
-FROM nginx:latest
+# Use an official Nginx runtime as a parent image
+FROM nginx
 
-# Copy your website files from your local directory to the NGINX document root
-COPY ./FrontEnd/* /usr/share/nginx/html/
+# Set the working directory to /usr/share/nginx/html
+WORKDIR /usr/share/nginx/html
 
-# Expose port 80 (default for HTTP)
+# Copy the contents of the "FrontEnd" folder from your Git repository
+COPY FrontEnd/ /usr/share/nginx/html/
+
+# Expose port 80 for the web server
 EXPOSE 80
-
-# Start the Nginx web server
-CMD ["nginx", "-g", "daemon off;"]
