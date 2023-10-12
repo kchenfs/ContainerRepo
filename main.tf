@@ -60,27 +60,60 @@ resource "aws_ecs_cluster" "personal_website_cluster" {
   name = "personal-website-cluster"
 }
 
-# Create an IAM role for ECS Fargate execution
-resource "aws_iam_role" "ecs_execution_role" {
-  name = "ecs-execution-role"
+# Create an IAM policy for ECS TASK
+resource "aws_iam_policy" "ecs_exec_policy" {
+  name        = "ECSExecPolicy"
+  description = "Policy for ECS Task Role"
+
+  # Define the policy document
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "ssmmessages:CreateControlChannel",
+          "ssmmessages:CreateDataChannel",
+          "ssmmessages:OpenControlChannel",
+          "ssmmessages:OpenDataChannel"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+# Create an IAM role for ECS Fargate Task Role
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs-task-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
-    Statement = [{
-      Action = "sts:AssumeRole",
-      Effect = "Allow",
-      Principal = {
-        Service = "ecs-tasks.amazonaws.com"
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
       }
-    }]
+    ]
   })
 }
+
+# Attach the ECS Exec policy to the ECS task role
+resource "aws_iam_role_policy_attachment" "ecs_task_attachment" {
+  policy_arn = aws_iam_policy.ecs_exec_policy.arn
+  role       = aws_iam_role.ecs_task_role.name
+}
+
 
 # Create an ECS Task Definition
 resource "aws_ecs_task_definition" "personal_website_task" {
   family                   = "personal-website"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
   cpu                      = 256
   memory                   = 512
@@ -110,18 +143,21 @@ EOF
 
 # Create an ECS Service
 resource "aws_ecs_service" "personal_website_service" {
-  name             = "personal-website-service"
-  cluster          = aws_ecs_cluster.personal_website_cluster.id
-  task_definition  = aws_ecs_task_definition.personal_website_task.arn
-  launch_type      = "FARGATE"
-  platform_version = "LATEST"
-  desired_count    = 0
+  name                   = "personal-website-service"
+  cluster                = aws_ecs_cluster.personal_website_cluster.id
+  task_definition        = aws_ecs_task_definition.personal_website_task.arn
+  launch_type            = "FARGATE"
+  platform_version       = "LATEST"
+  enable_execute_command = true
+  desired_count          = 0
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
     assign_public_ip = true
   }
 }
+
+
 
 output "ecs_service_name" {
   value = aws_ecs_service.personal_website_service.name
@@ -141,11 +177,54 @@ resource "aws_route53_zone" "main" {
 resource "aws_ecr_repository" "personal_website_repo" {
   name                 = "container-repo"
   image_tag_mutability = "MUTABLE" # or "IMMUTABLE" as needed
- 
+
   image_scanning_configuration {
     scan_on_push = true
   }
   encryption_configuration {
     encryption_type = "AES256"
   }
+}
+
+
+resource "aws_iam_policy" "cloudwatch_logs_policy" {
+  name = "cloudwatch-logs-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ],
+        Effect   = "Allow",
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
+resource "aws_iam_role" "ecs_execution_role" {
+  name = "ecs-execution-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_logs_attachment" {
+  policy_arn = aws_iam_policy.cloudwatch_logs_policy.arn
+  role       = aws_iam_role.ecs_execution_role.name
 }
