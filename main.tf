@@ -60,6 +60,25 @@ resource "aws_ecs_cluster" "personal_website_cluster" {
   name = "personal-website-cluster"
 }
 
+
+# Create an IAM role for ECS Fargate Task Role
+resource "aws_iam_role" "ecs_task_role" {
+  name = "ecs-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
 # Create an IAM policy for ECS TASK
 resource "aws_iam_policy" "ecs_exec_policy" {
   name        = "ECSExecPolicy"
@@ -83,24 +102,6 @@ resource "aws_iam_policy" "ecs_exec_policy" {
   })
 }
 
-# Create an IAM role for ECS Fargate Task Role
-resource "aws_iam_role" "ecs_task_role" {
-  name = "ecs-task-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = "sts:AssumeRole",
-        Effect = "Allow",
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        }
-      }
-    ]
-  })
-}
-
 # Attach the ECS Exec policy to the ECS task role
 resource "aws_iam_role_policy_attachment" "ecs_task_attachment" {
   policy_arn = aws_iam_policy.ecs_exec_policy.arn
@@ -114,7 +115,7 @@ resource "aws_ecs_task_definition" "personal_website_task" {
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   task_role_arn            = aws_iam_role.ecs_task_role.arn
-  execution_role_arn       = aws_iam_role.ecs_execution_role.arn 
+  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
   cpu                      = 256
   memory                   = 512
   pid_mode                 = "task"
@@ -123,7 +124,7 @@ resource "aws_ecs_task_definition" "personal_website_task" {
     cpu_architecture        = "X86_64"
   }
 
-container_definitions = <<EOF
+  container_definitions = <<EOF
 [
   {
     "name": "web",
@@ -147,7 +148,7 @@ container_definitions = <<EOF
   }
 ]
 EOF
-
+}
 
 # Create an ECS Service
 resource "aws_ecs_service" "personal_website_service" {
@@ -165,16 +166,6 @@ resource "aws_ecs_service" "personal_website_service" {
   }
 }
 
-
-output "ecs_service_name" {
-  value = aws_ecs_service.personal_website_service.name
-}
-
-
-resource "aws_route53_zone" "main" {
-  name    = "kchenfs.com"
-  comment = "Managed by Terraform"
-}
 
 
 resource "aws_ecr_repository" "personal_website_repo" {
@@ -207,6 +198,9 @@ resource "aws_iam_role" "ecs_execution_role" {
   })
 }
 
+
+
+
 resource "aws_iam_policy" "ecs_execution_role_policy" {
   name        = "ECSExecutionRolePolicy"
   description = "Policy for ECS Execution Role"
@@ -230,6 +224,49 @@ resource "aws_iam_policy" "ecs_execution_role_policy" {
 resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attachment" {
   policy_arn = aws_iam_policy.ecs_execution_role_policy.arn
   role       = aws_iam_role.ecs_execution_role.name
+}
+
+
+resource "aws_iam_role_policy_attachment" "ecs_execution_role_ecr_policy_attachment" {
+  policy_arn = aws_iam_policy.ecs_execution_role_policy.arn
+  role       = aws_iam_role.ecs_execution_role.name
+}
+
+resource "aws_iam_role_policy" "ecs_execution_role_ecr_policy" {
+  name = "ECSExecutionRoleECRPolicy"
+  role = aws_iam_role.ecs_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = [
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetAuthorizationToken",
+          "ecr:GetRepositoryPolicy",
+          "ecr:DescribeRepositories",
+          "ecr:GetRepositoryPolicy",
+          "ecr:ListImages",
+          "ecr:DescribeImages",
+          "ecr:GetImage",
+        ],
+        Effect   = "Allow",
+        Resource = "*",
+      },
+    ],
+  })
+}
+
+
+output "ecs_service_name" {
+  value = aws_ecs_service.personal_website_service.name
+}
+
+
+resource "aws_route53_zone" "main" {
+  name    = "kchenfs.com"
+  comment = "Managed by Terraform"
 }
 
 resource "aws_cloudwatch_log_group" "contaer_log_group" {
