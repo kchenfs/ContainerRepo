@@ -158,7 +158,7 @@ resource "aws_ecs_service" "personal_website_service" {
   launch_type            = "FARGATE"
   platform_version       = "LATEST"
   enable_execute_command = true
-  desired_count          = 2
+  desired_count          = 1
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
