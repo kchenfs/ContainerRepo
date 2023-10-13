@@ -64,6 +64,4 @@ jobs:
     - name: Update ECS Service
       run: |
         # Trigger an ECS service update to apply the changes
-        aws ecs update-service \
-          --cluster personal-website-cluster \
-          --service personal-website-service
+          aws ecs update-service --cluster personal-website-cluster --service personal-website-service --force-new-deployment

@@ -102,19 +102,11 @@ resource "aws_iam_policy" "combined_policy" {
 }
 
 
-
 # Attach the ECS Exec policy to the ECS task role
 resource "aws_iam_role_policy_attachment" "ecs_task_attachment" {
   policy_arn = aws_iam_policy.combined_policy.arn
   role       = aws_iam_role.ecs_task_role.name
 }
-
-
-
-
-
-
-
 
 
 # Create an ECS Task Definition
