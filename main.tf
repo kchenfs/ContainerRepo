@@ -17,6 +17,14 @@ resource "aws_subnet" "personal_website_public_subnet" {
   map_public_ip_on_launch = true
 }
 
+# Create a subnet within the VPC
+resource "aws_subnet" "personal_website_public_subnet2" {
+  vpc_id                  = aws_vpc.personal_website_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "ca-central-1b" # Replace with your desired AZ
+  map_public_ip_on_launch = true
+}
+
 # Create an internet gateway
 resource "aws_internet_gateway" "personal_website_igw" {
   vpc_id = aws_vpc.personal_website_vpc.id
@@ -26,7 +34,7 @@ resource "aws_internet_gateway" "personal_website_igw" {
 # Existing security group resource
 resource "aws_security_group" "security_group_personal_website" {
   name_prefix = "example-"
-  vpc_id      = aws_vpc.personal_website_vpc.id # Specify the VPC ID here
+  vpc_id      = aws_vpc.personal_website_vpc.id 
 
   # Ingress rule for HTTP (port 80)
   ingress {
@@ -158,11 +166,17 @@ resource "aws_ecs_service" "personal_website_service" {
   launch_type            = "FARGATE"
   platform_version       = "LATEST"
   enable_execute_command = true
-  desired_count          = 1
+  desired_count          = 0
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
     assign_public_ip = true
+  }
+  
+  load_balancer {
+    target_group_arn = aws_lb_target_group.front_end_target_group.arn
+    container_name   = "web"
+    container_port   = 80
   }
 }
 
@@ -237,7 +251,54 @@ resource "aws_route53_zone" "main" {
   comment = "Managed by Terraform"
 }
 
-resource "aws_cloudwatch_log_group" "contaer_log_group" {
+resource "aws_cloudwatch_log_group" "container_log_group" {
   name              = "container-website-log-group"
   retention_in_days = 7 # Set your desired retention period in days
 }
+
+resource "aws_acm_certificate" "wildcard_certificate" {
+  domain_name       = "*.kchenfs.com"
+  validation_method = "DNS"
+}
+
+resource "aws_route53_record" "root_domain" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "ALB"
+  type    = "A"
+  alias {
+    name                   = aws_lb.container_alb.dns_name  
+    zone_id                = aws_lb.container_alb.zone_id  
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_lb" "container_alb" {
+  name               = "container-alb"
+  internal           = false
+  load_balancer_type = "application"
+  subnets            = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
+  enable_deletion_protection = false
+  enable_http2 = true
+  ip_address_type = "ipv4"
+
+}
+
+resource "aws_lb_listener" "front_end_listener" {
+  load_balancer_arn = aws_lb.container_alb.arn  # Replace with your ALB ARN
+  port              = 80
+  protocol          = "HTTP"
+    default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.front_end_target_group.arn
+
+   }
+}
+
+resource "aws_lb_target_group" "front_end_target_group" {
+  name        = "fe-target-group"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = aws_vpc.personal_website_vpc.id
+}
+
