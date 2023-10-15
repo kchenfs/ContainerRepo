@@ -7,6 +7,7 @@ resource "aws_vpc" "personal_website_vpc" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
+
 }
 
 # Create a subnet within the VPC
@@ -17,16 +18,16 @@ resource "aws_subnet" "personal_website_public_subnet" {
   map_public_ip_on_launch = true
 }
 
-# Create a subnet within the VPC
 resource "aws_subnet" "personal_website_public_subnet2" {
   vpc_id                  = aws_vpc.personal_website_vpc.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "ca-central-1b" # Replace with your desired AZ
+  availability_zone       = "ca-central-1b"       # Replace with your desired AZ
   map_public_ip_on_launch = true
 }
 
+
 # Create an internet gateway
-resource "aws_internet_gateway" "personal_website_igw" {
+resource "aws_internet_gateway" "personal_website_igw" { #route table rules to allow the ALB?
   vpc_id = aws_vpc.personal_website_vpc.id
 }
 
@@ -44,23 +45,40 @@ resource "aws_security_group" "security_group_personal_website" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Ingress rule for HTTPS (port 443)
+  # Ingress rule for HTTP (port 80)
   ingress {
-    from_port   = 443
-    to_port     = 443
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
-  # Ingress rule for SSH (port 22) - Allow SSH access only from your IP address
   ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # Restrict SSH access to your specific IP address
+    from_port       = 0
+    to_port         = 65535
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
 }
+
+
+# Existing security group resource
+resource "aws_security_group" "alb_sg" {
+  vpc_id      = aws_vpc.personal_website_vpc.id 
+
+   # Ingress rule for HTTP (port 80)
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  
+}
+
+
+
 
 
 # Create an ECS Cluster
@@ -140,8 +158,8 @@ resource "aws_ecs_task_definition" "personal_website_task" {
     "cpu": 256,
     "portMappings": [
       {
-        "containerPort": 80,
-        "hostPort": 80,
+        "containerPort": 8081,
+        "hostPort": 8081,
         "protocol": "tcp"
       }
     ],
@@ -166,9 +184,10 @@ resource "aws_ecs_service" "personal_website_service" {
   launch_type            = "FARGATE"
   platform_version       = "LATEST"
   enable_execute_command = true
+  health_check_grace_period_seconds = 10
   desired_count          = 0
   network_configuration {
-    subnets          = [aws_subnet.personal_website_public_subnet.id]
+    subnets          = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
     assign_public_ip = true
   }
@@ -176,9 +195,11 @@ resource "aws_ecs_service" "personal_website_service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.front_end_target_group.arn
     container_name   = "web"
-    container_port   = 80
+    container_port   = 8081
   }
 }
+
+
 
 
 
@@ -276,12 +297,15 @@ resource "aws_lb" "container_alb" {
   name               = "container-alb"
   internal           = false
   load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb_sg.id]
   subnets            = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
   enable_deletion_protection = false
   enable_http2 = true
-  ip_address_type = "ipv4"
+  ip_address_type = "ipv4"  
 
 }
+
+
 
 resource "aws_lb_listener" "front_end_listener" {
   load_balancer_arn = aws_lb.container_alb.arn  # Replace with your ALB ARN
@@ -296,7 +320,7 @@ resource "aws_lb_listener" "front_end_listener" {
 
 resource "aws_lb_target_group" "front_end_target_group" {
   name        = "fe-target-group"
-  port        = 80
+  port        = 8081
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = aws_vpc.personal_website_vpc.id
