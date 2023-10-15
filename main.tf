@@ -21,7 +21,7 @@ resource "aws_subnet" "personal_website_public_subnet" {
 resource "aws_subnet" "personal_website_public_subnet2" {
   vpc_id                  = aws_vpc.personal_website_vpc.id
   cidr_block              = "10.0.1.0/24"
-  availability_zone       = "ca-central-1b"       # Replace with your desired AZ
+  availability_zone       = "ca-central-1b" # Replace with your desired AZ
   map_public_ip_on_launch = true
 }
 
@@ -35,7 +35,7 @@ resource "aws_internet_gateway" "personal_website_igw" { #route table rules to a
 # Existing security group resource
 resource "aws_security_group" "security_group_personal_website" {
   name_prefix = "example-"
-  vpc_id      = aws_vpc.personal_website_vpc.id 
+  vpc_id      = aws_vpc.personal_website_vpc.id
 
   # Ingress rule for HTTP (port 80)
   ingress {
@@ -45,18 +45,10 @@ resource "aws_security_group" "security_group_personal_website" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Ingress rule for HTTP (port 80)
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    security_groups = [aws_security_group.alb_sg.id]
-  }
-
   ingress {
     from_port       = 0
-    to_port         = 65535
-    protocol        = "tcp"
+    to_port         = 0
+    protocol        = "-1"
     security_groups = [aws_security_group.alb_sg.id]
   }
 
@@ -65,19 +57,38 @@ resource "aws_security_group" "security_group_personal_website" {
 
 # Existing security group resource
 resource "aws_security_group" "alb_sg" {
-  vpc_id      = aws_vpc.personal_website_vpc.id 
+  vpc_id = aws_vpc.personal_website_vpc.id
 
-   # Ingress rule for HTTP (port 80)
+  # Ingress rule for HTTP (port 80) from IPv4 anywhere
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-  
+
+  # Ingress rule for HTTP (port 80) from IPv6 anywhere
+  ingress {
+    from_port        = 80
+    to_port          = 80
+    protocol         = "tcp"
+    ipv6_cidr_blocks = ["::/0"]
+  }
+ 
+  }
+
+
+resource "aws_security_group" "egress_sg" {
+  vpc_id = aws_vpc.personal_website_vpc.id
+
+  # Egress rule allowing all traffic from this security group
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    security_groups = [aws_security_group.security_group_personal_website.id]
+  }
 }
-
-
 
 
 
@@ -113,8 +124,8 @@ resource "aws_iam_policy" "combined_policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action   = [
-          
+        Action = [
+
           "ssmmessages:CreateControlChannel",
           "ssmmessages:CreateDataChannel",
           "ssmmessages:OpenControlChannel",
@@ -178,20 +189,20 @@ EOF
 
 # Create an ECS Service
 resource "aws_ecs_service" "personal_website_service" {
-  name                   = "personal-website-service"
-  cluster                = aws_ecs_cluster.personal_website_cluster.id
-  task_definition        = aws_ecs_task_definition.personal_website_task.arn
-  launch_type            = "FARGATE"
-  platform_version       = "LATEST"
-  enable_execute_command = true
+  name                              = "personal-website-service"
+  cluster                           = aws_ecs_cluster.personal_website_cluster.id
+  task_definition                   = aws_ecs_task_definition.personal_website_task.arn
+  launch_type                       = "FARGATE"
+  platform_version                  = "LATEST"
+  enable_execute_command            = true
   health_check_grace_period_seconds = 10
-  desired_count          = 0
+  desired_count                     = 3
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
     assign_public_ip = true
   }
-  
+
   load_balancer {
     target_group_arn = aws_lb_target_group.front_end_target_group.arn
     container_name   = "web"
@@ -287,35 +298,35 @@ resource "aws_route53_record" "root_domain" {
   name    = "ALB"
   type    = "A"
   alias {
-    name                   = aws_lb.container_alb.dns_name  
-    zone_id                = aws_lb.container_alb.zone_id  
+    name                   = aws_lb.container_alb.dns_name
+    zone_id                = aws_lb.container_alb.zone_id
     evaluate_target_health = true
   }
 }
 
 resource "aws_lb" "container_alb" {
-  name               = "container-alb"
-  internal           = false
-  load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_sg.id]
-  subnets            = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
+  name                       = "container-alb"
+  internal                   = false
+  load_balancer_type         = "application"
+  security_groups            = [aws_security_group.alb_sg.id, aws_security_group.egress_sg.id]
+  subnets                    = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
   enable_deletion_protection = false
-  enable_http2 = true
-  ip_address_type = "ipv4"  
+  enable_http2               = true
+  ip_address_type            = "ipv4"
 
 }
 
 
 
 resource "aws_lb_listener" "front_end_listener" {
-  load_balancer_arn = aws_lb.container_alb.arn  # Replace with your ALB ARN
+  load_balancer_arn = aws_lb.container_alb.arn # Replace with your ALB ARN
   port              = 80
   protocol          = "HTTP"
-    default_action {
+  default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.front_end_target_group.arn
 
-   }
+  }
 }
 
 resource "aws_lb_target_group" "front_end_target_group" {
