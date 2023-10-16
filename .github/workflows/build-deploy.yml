@@ -42,7 +42,4 @@ jobs:
         # Push the Docker image to ECR
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
 
-    - name: Update ECS Service
-      run: |
-        # Trigger an ECS service update to apply the changes
-          aws ecs update-service --cluster personal-website-cluster --service personal-website-service --force-new-deployment
+   
