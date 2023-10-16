@@ -42,24 +42,6 @@ jobs:
         # Push the Docker image to ECR
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
 
-    - name: Update ECS Task Definition
-      run: |
-        # Update your ECS task definition to use the new image
-        aws ecs register-task-definition \
-          --family personal-website \
-          --container-definitions "[{
-            \"name\": \"web\",
-            \"image\": \"${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest\",
-            \"memory\": 512,
-            \"cpu\": 256,
-            \"portMappings\": [
-              {
-                \"containerPort\": 8081,
-                \"protocol\": \"tcp\"
-              }
-            ]
-          }]"
-
     - name: Update ECS Service
       run: |
         # Trigger an ECS service update to apply the changes
