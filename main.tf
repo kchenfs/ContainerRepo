@@ -39,16 +39,16 @@ resource "aws_security_group" "security_group_personal_website" {
 
   # Ingress rule for HTTP (port 80)
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 0
+    to_port     = 65535
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port       = 0
-    to_port         = 0
-    protocol        = "-1"
+    to_port         = 65535
+    protocol        = "TCP"
     security_groups = [aws_security_group.alb_sg.id]
   }
 
@@ -59,36 +59,23 @@ resource "aws_security_group" "security_group_personal_website" {
 resource "aws_security_group" "alb_sg" {
   vpc_id = aws_vpc.personal_website_vpc.id
 
-  # Ingress rule for HTTP (port 80) from IPv4 anywhere
+  # Ingress rule to allow traffic on all ports from IPv4 anywhere
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 0
+    to_port     = 65535
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Ingress rule for HTTP (port 80) from IPv6 anywhere
+  # Ingress rule to allow traffic on all ports from IPv6 anywhere
   ingress {
-    from_port        = 80
-    to_port          = 80
+    from_port        = 0
+    to_port          = 65535
     protocol         = "tcp"
     ipv6_cidr_blocks = ["::/0"]
   }
- 
-  }
-
-
-resource "aws_security_group" "egress_sg" {
-  vpc_id = aws_vpc.personal_website_vpc.id
-
-  # Egress rule allowing all traffic from this security group
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    security_groups = [aws_security_group.security_group_personal_website.id]
-  }
 }
+
 
 
 
@@ -170,7 +157,6 @@ resource "aws_ecs_task_definition" "personal_website_task" {
     "portMappings": [
       {
         "containerPort": 8081,
-        "hostPort": 8081,
         "protocol": "tcp"
       }
     ],
@@ -195,8 +181,8 @@ resource "aws_ecs_service" "personal_website_service" {
   launch_type                       = "FARGATE"
   platform_version                  = "LATEST"
   enable_execute_command            = true
-  health_check_grace_period_seconds = 10
-  desired_count                     = 3
+  health_check_grace_period_seconds = 60
+  desired_count                     = 2
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
@@ -209,10 +195,6 @@ resource "aws_ecs_service" "personal_website_service" {
     container_port   = 8081
   }
 }
-
-
-
-
 
 resource "aws_ecr_repository" "personal_website_repo" {
   name                 = "container-repo"
@@ -308,7 +290,7 @@ resource "aws_lb" "container_alb" {
   name                       = "container-alb"
   internal                   = false
   load_balancer_type         = "application"
-  security_groups            = [aws_security_group.alb_sg.id, aws_security_group.egress_sg.id]
+  security_groups            = [aws_security_group.alb_sg.id]
   subnets                    = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
   enable_deletion_protection = false
   enable_http2               = true
@@ -335,5 +317,7 @@ resource "aws_lb_target_group" "front_end_target_group" {
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = aws_vpc.personal_website_vpc.id
-}
+  }
+
+
 
