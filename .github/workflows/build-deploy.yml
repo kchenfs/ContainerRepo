@@ -54,8 +54,7 @@ jobs:
             \"cpu\": 256,
             \"portMappings\": [
               {
-                \"containerPort\": 80,
-                \"hostPort\": 80,
+                \"containerPort\": 8081,
                 \"protocol\": \"tcp\"
               }
             ]
