@@ -182,7 +182,7 @@ resource "aws_ecs_service" "personal_website_service" {
   platform_version                  = "LATEST"
   enable_execute_command            = true
   health_check_grace_period_seconds = 60
-  desired_count                     = 2
+  desired_count                     = 0
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
