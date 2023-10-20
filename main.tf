@@ -39,35 +39,51 @@ resource "aws_lb_target_group" "front_end_target_group" {
 # Existing security group resource
 resource "aws_security_group" "alb_sg" {
   vpc_id = aws_vpc.personal_website_vpc.id
-
-  # Ingress rule to allow traffic on all ports from IPv4 anywhere
-  ingress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
 }
 
+resource "aws_vpc_security_group_ingress_rule" "allow_http_lb" {
+  security_group_id = aws_security_group.alb_sg.id
+  from_port   = 0
+  to_port     = 65535
+  ip_protocol    = "tcp"
+  cidr_ipv4 = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_egress_rule" "allow_healthcheck" {
+  security_group_id = aws_security_group.alb_sg.id
+
+  ip_protocol        = -1
+  referenced_security_group_id = aws_security_group.security_group_personal_website.id
+}
+
+
 resource "aws_security_group" "security_group_personal_website" {
-  name_prefix = "example-"
+  name_prefix = "container-sg"
   vpc_id      = aws_vpc.personal_website_vpc.id
+}
 
-  # Ingress rule for HTTP (port 80)
-  ingress {
-    from_port   = 0
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_vpc_security_group_ingress_rule" "allow_http" {
+  security_group_id = aws_security_group.security_group_personal_website.id
 
-  ingress {
-    from_port       = 0
-    to_port         = 65535
-    protocol        = "TCP"
-    security_groups = [aws_security_group.alb_sg.id]
-  }
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 80
+  ip_protocol = "tcp"
+  to_port     = 80
+}
+resource "aws_vpc_security_group_ingress_rule" "allow_https" {
+  security_group_id = aws_security_group.security_group_personal_website.id
 
+  cidr_ipv4   = "0.0.0.0/0"
+  from_port   = 443
+  ip_protocol = "tcp"
+  to_port     = 443
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow-lb-traffic" {
+  security_group_id = aws_security_group.security_group_personal_website.id
+
+  referenced_security_group_id = aws_security_group.alb_sg.id
+  ip_protocol                  = -1
 }
 
 
@@ -110,7 +126,8 @@ resource "aws_ecs_service" "kchenfs_service" {
   launch_type          = "FARGATE"
   platform_version     = "LATEST"
   force_new_deployment = true
-  desired_count        = 3
+  desired_count        = 0
+
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
     security_groups  = [aws_security_group.security_group_personal_website.id]
