@@ -98,8 +98,8 @@ resource "aws_lb_target_group" "front_end" {
 # Existing security group resource
 resource "aws_security_group" "alb_sg" {
   description = "security group for ALB"
-  vpc_id = aws_vpc.personal_website_vpc.id
-   lifecycle {
+  vpc_id      = aws_vpc.personal_website_vpc.id
+  lifecycle {
     create_before_destroy = true
   }
 }
@@ -133,7 +133,7 @@ resource "aws_security_group" "security_group_personal_website" {
   name_prefix = "container-sg"
   description = "security group for containers"
   vpc_id      = aws_vpc.personal_website_vpc.id
-   lifecycle {
+  lifecycle {
     create_before_destroy = true
   }
 }

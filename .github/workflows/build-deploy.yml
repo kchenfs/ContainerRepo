@@ -42,4 +42,8 @@ jobs:
         # Push the Docker image to ECR
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
 
+    - name: Update ECS/Fargate Service
+      run: |
+        aws ecs update-service --cluster  kchenfs-cluster --service kchenfs-service --force-new-deployment
+
    
