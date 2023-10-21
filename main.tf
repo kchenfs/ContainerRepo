@@ -29,15 +29,15 @@ resource "aws_route53_record" "alb_dns_record" {
 
 resource "aws_route53_record" "cert_record" {
   allow_overwrite = true
-  name =  tolist(aws_acm_certificate.alb_cert.domain_validation_options)[0].resource_record_name
-  records = [tolist(aws_acm_certificate.alb_cert.domain_validation_options)[0].resource_record_value]
-  type = tolist(aws_acm_certificate.alb_cert.domain_validation_options)[0].resource_record_type
-  zone_id = aws_route53_zone.myzone.zone_id
-  ttl = 60
+  name            = tolist(aws_acm_certificate.alb_cert.domain_validation_options)[0].resource_record_name
+  records         = [tolist(aws_acm_certificate.alb_cert.domain_validation_options)[0].resource_record_value]
+  type            = tolist(aws_acm_certificate.alb_cert.domain_validation_options)[0].resource_record_type
+  zone_id         = aws_route53_zone.myzone.zone_id
+  ttl             = 60
 }
 
 resource "aws_acm_certificate_validation" "alb_cert_validation" {
-  certificate_arn = aws_acm_certificate.alb_cert.arn
+  certificate_arn         = aws_acm_certificate.alb_cert.arn
   validation_record_fqdns = [aws_route53_record.cert_record.fqdn]
 }
 
@@ -97,13 +97,26 @@ resource "aws_lb_target_group" "front_end" {
 
 # Existing security group resource
 resource "aws_security_group" "alb_sg" {
+  description = "security group for ALB"
   vpc_id = aws_vpc.personal_website_vpc.id
+   lifecycle {
+    create_before_destroy = true
+  }
 }
+
 
 resource "aws_vpc_security_group_ingress_rule" "allow_http_lb" {
   security_group_id = aws_security_group.alb_sg.id
-  from_port         = 0
-  to_port           = 65535
+  from_port         = 80
+  to_port           = 80
+  ip_protocol       = "tcp"
+  cidr_ipv4         = "0.0.0.0/0"
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_https_lb" {
+  security_group_id = aws_security_group.alb_sg.id
+  from_port         = 443
+  to_port           = 443
   ip_protocol       = "tcp"
   cidr_ipv4         = "0.0.0.0/0"
 }
@@ -118,24 +131,11 @@ resource "aws_vpc_security_group_egress_rule" "allow_healthcheck" {
 
 resource "aws_security_group" "security_group_personal_website" {
   name_prefix = "container-sg"
+  description = "security group for containers"
   vpc_id      = aws_vpc.personal_website_vpc.id
-}
-
-resource "aws_vpc_security_group_ingress_rule" "allow_http" {
-  security_group_id = aws_security_group.security_group_personal_website.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  from_port   = 80
-  ip_protocol = "tcp"
-  to_port     = 80
-}
-resource "aws_vpc_security_group_ingress_rule" "allow_https" {
-  security_group_id = aws_security_group.security_group_personal_website.id
-
-  cidr_ipv4   = "0.0.0.0/0"
-  from_port   = 443
-  ip_protocol = "tcp"
-  to_port     = 443
+   lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_vpc_security_group_ingress_rule" "allow-lb-traffic" {
@@ -174,6 +174,33 @@ resource "aws_internet_gateway" "personal_website_igw" { #route table rules to a
   vpc_id = aws_vpc.personal_website_vpc.id
 }
 
+resource "aws_appautoscaling_target" "ecs_target" {
+  max_capacity       = 2
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.kchenfs_cluster.name}/${aws_ecs_service.kchenfs_service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "ecs_scaling_policy" {
+  name               = "ecs-service-target-tracking-policy"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
+
+    target_value       = 70 # Adjust this value based on your desired CPU utilization target
+    scale_in_cooldown  = 60
+    scale_out_cooldown = 60
+  }
+}
+
+
 resource "aws_ecs_cluster" "kchenfs_cluster" {
   name = "kchenfs-cluster"
 }
@@ -185,7 +212,11 @@ resource "aws_ecs_service" "kchenfs_service" {
   launch_type          = "FARGATE"
   platform_version     = "LATEST"
   force_new_deployment = true
-  desired_count        = 0
+  desired_count        = 1
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
 
   network_configuration {
     subnets          = [aws_subnet.personal_website_public_subnet.id, aws_subnet.personal_website_public_subnet2.id]
@@ -198,6 +229,7 @@ resource "aws_ecs_service" "kchenfs_service" {
     container_port   = 80
   }
 }
+
 
 
 # Create an ECS Task Definition
