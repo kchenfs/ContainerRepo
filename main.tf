@@ -212,7 +212,7 @@ resource "aws_ecs_service" "kchenfs_service" {
   launch_type          = "FARGATE"
   platform_version     = "LATEST"
   force_new_deployment = true
-  desired_count        = 1
+  desired_count        = 0
 
   lifecycle {
     ignore_changes = [desired_count]
