@@ -478,6 +478,27 @@ input[type="submit"]:focus {
 }
 /* --- End Social Links --- */
 
+/* Visitor Counter */
+.visitor-counter {
+  text-align: center;
+  margin: 20px 0;
+  color: #fff;
+  font-size: 18px; /* Adjust the font size as needed */
+}
+
+.visitor-counter p {
+  margin: 0;
+}
+
+.visitor-counter #visitor-count {
+  font-size: 24px; /* Adjust the font size as needed */
+  color: #5e2fd6;
+  font-weight: bold;
+}
+
+/* End of Visitor Counter */
+
+
 .header-buttons {
   margin-top: 50px;
 }
