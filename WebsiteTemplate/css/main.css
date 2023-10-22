@@ -446,8 +446,11 @@ input[type="submit"]:focus {
 }
 
 /* --- Social Links --- */
+/* Social Links */
 .social-links {
   margin: 20px 0;
+  text-align: center; /* Center-align the content */
+  font-size: 18px; /* Adjust the font size as needed */
 }
 
 .social-links ul {
@@ -469,19 +472,18 @@ input[type="submit"]:focus {
   display: block;
   line-height: 30px;
   text-align: center;
-  opacity: .9;
+  opacity: 0.9;
 }
 
 .social-links ul li a:hover {
   opacity: 1;
-  background-color: rgba(255,255,255,.2);
+  background-color: rgba(255, 255, 255, 0.2);
 }
-/* --- End Social Links --- */
 
 /* Visitor Counter */
 .visitor-counter {
+  margin: 20px 0; /* Adjust the margin to match the spacing */
   text-align: center;
-  margin: 20px 0;
   color: #fff;
   font-size: 18px; /* Adjust the font size as needed */
 }
@@ -496,11 +498,10 @@ input[type="submit"]:focus {
   font-weight: bold;
 }
 
-/* End of Visitor Counter */
-
-
+/* Header Buttons */
 .header-buttons {
-  margin-top: 50px;
+  margin: 20px 0; /* Adjust the margin to match the spacing */
+  text-align: center;
 }
 
 .header-buttons .btn-primary {
@@ -514,6 +515,7 @@ input[type="submit"]:focus {
   color: #5e2fd6;
   border-color: #fff;
 }
+
 
 .header .copyrights {
   color: #fff;
