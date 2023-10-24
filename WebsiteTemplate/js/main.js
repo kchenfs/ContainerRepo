@@ -309,7 +309,7 @@
                 zoom: 16 // Google Map ZOOM. You can change this value
             });
             $("#map").addMarker({
-                address: "147 Markham Street, Toronto, Ontario, Canada", // Your Address. Change it
+                address: "Toronto, Ontario, Canada", // Your Address. Change it
             });
         });
     
