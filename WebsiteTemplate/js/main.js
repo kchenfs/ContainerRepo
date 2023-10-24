@@ -309,7 +309,7 @@
                 zoom: 16 // Google Map ZOOM. You can change this value
             });
             $("#map").addMarker({
-                address: "220 Yonge St, Toronto, Ontario, Canada", // Your Address. Change it
+                address: "290 Bremner Blvd, Toronto, Ontario, Canada", // Your Address. Change it
             });
         });
     
