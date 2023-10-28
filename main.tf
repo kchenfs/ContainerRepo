@@ -399,7 +399,7 @@ resource "aws_api_gateway_integration" "count_get_integration" {
   http_method             = aws_api_gateway_method.count_get_method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.my_lambda.invoke_arn
+  uri                     = aws_lambda_function.website_counter_lambda.invoke_arn
 }
 
 resource "aws_api_gateway_integration" "count_post_integration" {
@@ -408,7 +408,7 @@ resource "aws_api_gateway_integration" "count_post_integration" {
   http_method             = aws_api_gateway_method.count_post_method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.my_lambda.invoke_arn
+  uri                     = aws_lambda_function.website_counter_lambda.invoke_arn
 }
 
 resource "aws_api_gateway_method_response" "count_get_response" {
