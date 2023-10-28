@@ -315,3 +315,56 @@ resource "aws_iam_role" "ecs_execution_role" {
 }
 
 
+resource "aws_dynamodb_table" "website_counter" {
+  name           = "WebsiteCounterTable"  
+  billing_mode   = "PAY_PER_REQUEST"     
+  hash_key       = "CounterID"        
+
+  attribute {
+    name = "CounterID"
+    type = "S"  #
+  }
+}
+
+
+
+
+
+resource "aws_lambda_function" "website_counter_lambda" {
+  function_name = "WebsiteCounterLambda" 
+  handler = "lambda_function.lambda_handler"
+
+
+  runtime = "python3.11"  # The runtime for your Lambda function
+  role = aws_iam_role.lambda_execution_role.arn  # ARN of the IAM role for your Lambda function
+  filename = "path/to/your_lambda_function.zip"  # Path to the deployment package (ZIP file)
+
+  source_code_hash = filebase64sha256("path/to/your_lambda_function.zip")  # Calculate the source code hash
+
+  environment {
+    variables = {
+      DYNAMODB_TABLE_NAME = aws_dynamodb_table.website_counter.name
+    }
+  }
+}
+
+resource "aws_iam_role" "lambda_execution_role" {
+  name = "lambda_execution_role"  
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Action = "sts:AssumeRole",
+        Effect = "Allow",
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_policy_attachment" "lambda_execution_policy" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+  roles      = [aws_iam_role.lambda_execution_role.name]
+}
