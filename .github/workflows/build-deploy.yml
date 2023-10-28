@@ -46,13 +46,6 @@ jobs:
       run: |
         aws ecs update-service --cluster kchenfs-cluster --service kchenfs-service --force-new-deployment
 
-  deploy-lambda-function: # This block should be at the same level as build-and-deploy
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
     - name: Deploy Lambda Function
       run: |
         pwd
