@@ -450,3 +450,11 @@ resource "aws_api_gateway_deployment" "count_deployment" {
   rest_api_id = aws_api_gateway_rest_api.count_api.id
   stage_name  = "prod" 
 }
+
+resource "aws_lambda_permission" "apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.website_counter_lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.count_api.id}/*"
+}
