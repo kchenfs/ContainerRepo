@@ -2,7 +2,7 @@ import json
 import boto3
 
 dynamodb = boto3.client('dynamodb')
-table_name = 'WebsiteCounterLambda'
+table_name = 'WebsiteCounterTable'
 
 def lambda_handler(event, context):
     operation = event['httpMethod']
