@@ -367,6 +367,12 @@ resource "aws_iam_policy_attachment" "lambda_execution_policy" {
   roles      = [aws_iam_role.lambda_execution_role.name]
 }
 
+resource "aws_iam_policy_attachment" "dynamodb_policy" {
+  name = "dynamodb_access"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  roles      = [aws_iam_role.lambda_execution_role.name]
+}
+
 
 resource "aws_api_gateway_rest_api" "count_api" {
   name        = "CountAPI"
