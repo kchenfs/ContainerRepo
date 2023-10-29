@@ -27,7 +27,7 @@ def lambda_handler(event, context):
 def get_counter():
     response = dynamodb.get_item(
         TableName=table_name,
-        Key={'CounterName': {'S': 'WebsiteCounter'}}
+        Key={'CounterID': {'S': 'WebsiteCounter'}}
     )
     item = response.get('Item', {'CounterValue': {'N': '0'}})
     return int(item['CounterValue']['N'])
@@ -35,7 +35,7 @@ def get_counter():
 def increment_counter():
     dynamodb.update_item(
         TableName=table_name,
-        Key={'CounterName': {'S': 'WebsiteCounter'}},
+        Key={'CounterID': {'S': 'WebsiteCounter'}},
         UpdateExpression='SET CounterValue = CounterValue + :val',
         ExpressionAttributeValues={':val': {'N': '1'}}
     )
