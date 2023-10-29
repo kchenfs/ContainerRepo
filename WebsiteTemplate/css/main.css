@@ -494,9 +494,10 @@ input[type="submit"]:focus {
 
 .visitor-counter #visitor-count {
   font-size: 24px; /* Adjust the font size as needed */
-  color: #5e2fd6;
+  color: white; /* Change the color to white */
   font-weight: bold;
 }
+
 
 /* Header Buttons */
 .header-buttons {
