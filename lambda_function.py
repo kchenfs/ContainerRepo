@@ -9,20 +9,38 @@ def lambda_handler(event, context):
     
     if operation == 'GET':
         counter_value = get_counter()
-        return {
+        response = {
             'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': 'https://web.kchenfs.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
             'body': json.dumps({'CounterValue': counter_value})
         }
+        return response
     elif operation == 'POST':
         increment_counter()
-        return {
-            'statusCode': 204
+        response = {
+            'statusCode': 204,
+            'headers': {
+                'Access-Control-Allow-Origin': 'https://web.kchenfs.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
         }
+        return response
     else:
-        return {
+        response = {
             'statusCode': 400,
+            'headers': {
+                'Access-Control-Allow-Origin': 'https://web.kchenfs.com',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
             'body': 'Unsupported method'
         }
+        return response
 
 def get_counter():
     response = dynamodb.get_item(
