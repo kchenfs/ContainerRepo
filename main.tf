@@ -399,12 +399,6 @@ resource "aws_api_gateway_method" "count_post_method" {
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_method" "count_options_method" {
-  rest_api_id   = aws_api_gateway_rest_api.count_api.id
-  resource_id   = aws_api_gateway_resource.count_resource.id
-  http_method   = "OPTIONS"
-  authorization = "NONE"
-}
 
 resource "aws_api_gateway_integration" "count_get_integration" {
   rest_api_id             = aws_api_gateway_rest_api.count_api.id
@@ -424,16 +418,6 @@ resource "aws_api_gateway_integration" "count_post_integration" {
   uri                     = aws_lambda_function.website_counter_lambda.invoke_arn
 }
 
-resource "aws_api_gateway_integration" "count_options_integration" {
-  rest_api_id             = aws_api_gateway_rest_api.count_api.id
-  resource_id             = aws_api_gateway_resource.count_resource.id
-  http_method             = aws_api_gateway_method.count_options_method.http_method
-  integration_http_method = "OPTIONS"
-  type                    = "MOCK"
-  request_templates = {
-    "application/json" = "{\"statusCode\": 200}"
-  }
-}
 
 resource "aws_api_gateway_method_response" "count_get_response" {
   rest_api_id = aws_api_gateway_rest_api.count_api.id
@@ -449,17 +433,6 @@ resource "aws_api_gateway_method_response" "count_post_response" {
   status_code = "200"
 }
 
-resource "aws_api_gateway_method_response" "count_options_response" {
-  rest_api_id = aws_api_gateway_rest_api.count_api.id
-  resource_id = aws_api_gateway_resource.count_resource.id
-  http_method = aws_api_gateway_method.count_options_method.http_method
-  status_code = "200"
-  response_parameters = {
-    "method.response.header.Access-Control-Allow-Methods" = "'GET,POST,OPTIONS'"
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-    "method.response.header.Access-Control-Allow-Origin" = "'https://web.kchenfs.com'"
-  }
-}
 
 resource "aws_api_gateway_integration_response" "count_get_response" {
   rest_api_id = aws_api_gateway_rest_api.count_api.id
@@ -485,7 +458,6 @@ resource "aws_api_gateway_deployment" "count_deployment" {
   depends_on = [
     aws_api_gateway_integration.count_get_integration,
     aws_api_gateway_integration.count_post_integration,
-    aws_api_gateway_integration.count_options_integration,
   ]
   rest_api_id = aws_api_gateway_rest_api.count_api.id
   stage_name  = "prod" 

@@ -13,7 +13,7 @@ def lambda_handler(event, context):
             'statusCode': 200,
             'headers': {
                 'Access-Control-Allow-Origin': 'https://web.kchenfs.com',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                'Access-Control-Allow-Methods': 'POST,GET',
                 'Access-Control-Allow-Headers': 'Content-Type',
             },
             'body': json.dumps({'CounterValue': counter_value})
@@ -35,7 +35,7 @@ def lambda_handler(event, context):
             'statusCode': 400,
             'headers': {
                 'Access-Control-Allow-Origin': 'https://web.kchenfs.com',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                'Access-Control-Allow-Methods': 'POST,GET',
                 'Access-Control-Allow-Headers': 'Content-Type',
             },
             'body': 'Unsupported method'
