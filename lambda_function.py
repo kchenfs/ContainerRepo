@@ -25,7 +25,7 @@ def lambda_handler(event, context):
             'statusCode': 204,
             'headers': {
                 'Access-Control-Allow-Origin': 'https://web.kchenfs.com',
-                'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+                'Access-Control-Allow-Methods': 'POST,GET',
                 'Access-Control-Allow-Headers': 'Content-Type',
             },
         }
