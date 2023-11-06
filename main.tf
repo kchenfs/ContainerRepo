@@ -471,29 +471,82 @@ resource "aws_lambda_permission" "apigw_lambda" {
   source_arn = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.count_api.id}/*"
 }
 
+resource "aws_cloudfront_cache_policy" "my_cache_policy" {
+  name        = "my-cache-policy"
+  default_ttl = 3600  # Set the default time-to-live in seconds
+
+  # Define behaviors for different paths or request patterns if needed
+  dynamic "cache_behavior" {
+    for_each = ["/*"]  # You can specify paths or patterns here
+    content {
+      path_pattern = cache_behavior.key
+      min_ttl      = 0  # Set minimum time-to-live in seconds
+      max_ttl      = 3600  # Set maximum time-to-live in seconds
+      default_ttl  = 3600  # Set default time-to-live in seconds
+      viewer_protocol_policy = "https-only"  # Use HTTPS
+    }
+  }
+}
+
+resource "aws_cloudfront_origin_request_policy" "my_origin_request_policy" {
+  name = "my-origin-request-policy"
+
+  query_string {
+    behavior = "none"  # Don't forward query strings
+  }
+
+  cookies {
+    forward = "none"  # Don't forward cookies
+  }
+
+  headers {
+    forward = "none"  # Don't forward custom headers
+  }
+
+  http_method {
+    behavior = "whitelist"
+    items    = ["GET", "HEAD"]  # Allow GET and HEAD methods
+  }
+}
+
 
 resource "aws_cloudfront_distribution" "my_cdn" {
   origin {
-    domain_name = aws_lb.container_alb.dns_name  # Use the ALB DNS name
+    domain_name = aws_lb.container_alb.dns_name
     origin_id   = "my-alb-origin"
+    custom_origin_config {
+    http_port              = 80
+    https_port             = 443
+    origin_protocol_policy = "https-only"
+    origin_ssl_protocols   = ["TLSv1.2"]
+  }
   }
 
-  enabled             = true                # Set to true to enable the CloudFront distribution
-  http_version        = "http3"             # Enable HTTP/3 support
+  enabled             = true                
+  http_version        = "http3"             
   default_root_object = "index.html"
-  price_class         = "PriceClass_100"    # You can choose "PriceClass_100," "PriceClass_200," or "PriceClass_All"
-
+  price_class         = "PriceClass_100"   
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+      locations        = []
+    }
+  }
   viewer_certificate {
     acm_certificate_arn      = aws_acm_certificate.alb_cert.arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
-  viewer_protocol_policy = "redirect-to-https"  # Redirect all HTTP requests to HTTPS
-  compress              = false                # Disable object compression
-  restrict_viewer_access = false              # Do not restrict viewer access
-  allowed_methods = ["GET", "HEAD"]
-  cached_methods = ["GET", "HEAD"]
-
+  default_cache_behavior {
+    target_origin_id       = "my-alb-origin"
+    allowed_methods       = ["GET", "HEAD"]
+    cached_methods        = ["GET", "HEAD"]
+    min_ttl               = 0
+    default_ttl           = 3600
+    max_ttl               = 86400
+    viewer_protocol_policy = "https-only"
+    cache_policy_id = aws_cloudfront_cache_policy.my_cache_policy.id
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.my_origin_request_policy.id
+  }
 }
-
