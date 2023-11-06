@@ -470,3 +470,30 @@ resource "aws_lambda_permission" "apigw_lambda" {
   principal     = "apigateway.amazonaws.com"
   source_arn = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.count_api.id}/*"
 }
+
+
+resource "aws_cloudfront_distribution" "my_cdn" {
+  origin {
+    domain_name = aws_lb.container_alb.dns_name  # Use the ALB DNS name
+    origin_id   = "my-alb-origin"
+  }
+
+  enabled             = true                # Set to true to enable the CloudFront distribution
+  http_version        = "http3"             # Enable HTTP/3 support
+  default_root_object = "index.html"
+  price_class         = "PriceClass_100"    # You can choose "PriceClass_100," "PriceClass_200," or "PriceClass_All"
+
+  viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate.alb_cert.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
+
+  viewer_protocol_policy = "redirect-to-https"  # Redirect all HTTP requests to HTTPS
+  compress              = false                # Disable object compression
+  restrict_viewer_access = false              # Do not restrict viewer access
+  allowed_methods = ["GET", "HEAD"]
+  cached_methods = ["GET", "HEAD"]
+
+}
+
