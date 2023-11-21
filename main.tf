@@ -21,9 +21,9 @@ resource "aws_route53_record" "alb_dns_record" {
   name    = "web.kchenfs.com"
   type    = "A"
   alias {
-    name                   = aws_lb.container_alb.dns_name
-    zone_id                = aws_lb.container_alb.zone_id
-    evaluate_target_health = true
+    name                   = aws_cloudfront_distribution.my_cdn.domain_name
+    zone_id                = aws_cloudfront_distribution.my_cdn.hosted_zone_id
+    evaluate_target_health = false
   }
 }
 
@@ -84,6 +84,25 @@ resource "aws_lb_listener" "front_end_https" {
     target_group_arn = aws_lb_target_group.front_end.arn
   }
 }
+
+resource "aws_lb_listener_rule" "Forward-Customer-Header-Rule" {
+  listener_arn = aws_lb_listener.front_end_https.arn
+  priority     = 1
+
+  action {
+    type = "forward"
+    target_group_arn = aws_lb_target_group.front_end.arn
+  }
+
+  condition {
+    http_header {
+      http_header_name = "X-Custom_Header"
+      values           = ["randomvalue1234567890"]
+    }
+  }
+}
+
+
 
 
 resource "aws_lb_target_group" "front_end" {
@@ -212,7 +231,7 @@ resource "aws_ecs_service" "kchenfs_service" {
   launch_type          = "FARGATE"
   platform_version     = "LATEST"
   force_new_deployment = true
-  desired_count        = 0
+  desired_count        = 1
 
   lifecycle {
     ignore_changes = [desired_count]
@@ -316,13 +335,13 @@ resource "aws_iam_role" "ecs_execution_role" {
 
 
 resource "aws_dynamodb_table" "website_counter" {
-  name           = "WebsiteCounterTable"  
-  billing_mode   = "PAY_PER_REQUEST"     
-  hash_key       = "CounterID"        
+  name         = "WebsiteCounterTable"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "CounterID"
 
   attribute {
     name = "CounterID"
-    type = "S"  #
+    type = "S" #
   }
 }
 
@@ -331,12 +350,12 @@ resource "aws_dynamodb_table" "website_counter" {
 
 
 resource "aws_lambda_function" "website_counter_lambda" {
-  function_name = "WebsiteCounterLambda" 
-  handler = "lambda_function.lambda_handler"
-  runtime = "python3.11"  # The runtime for your Lambda function
-  role = aws_iam_role.lambda_execution_role.arn  # ARN of the IAM role for your Lambda function
-  s3_bucket = "kencfswebsite"
-  s3_key    = "lambda_function.zip" 
+  function_name = "WebsiteCounterLambda"
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.11"                           # The runtime for your Lambda function
+  role          = aws_iam_role.lambda_execution_role.arn # ARN of the IAM role for your Lambda function
+  s3_bucket     = "kencfswebsite"
+  s3_key        = "lambda_function.zip"
 
   environment {
     variables = {
@@ -346,7 +365,7 @@ resource "aws_lambda_function" "website_counter_lambda" {
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
-  name = "lambda_execution_role"  
+  name = "lambda_execution_role"
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
@@ -362,13 +381,13 @@ resource "aws_iam_role" "lambda_execution_role" {
 }
 
 resource "aws_iam_policy_attachment" "lambda_execution_policy" {
-  name = "lambda_execution"
+  name       = "lambda_execution"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   roles      = [aws_iam_role.lambda_execution_role.name]
 }
 
 resource "aws_iam_policy_attachment" "dynamodb_policy" {
-  name = "dynamodb_access"
+  name       = "dynamodb_access"
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
   roles      = [aws_iam_role.lambda_execution_role.name]
 }
@@ -382,7 +401,7 @@ resource "aws_api_gateway_rest_api" "count_api" {
 resource "aws_api_gateway_resource" "count_resource" {
   rest_api_id = aws_api_gateway_rest_api.count_api.id
   parent_id   = aws_api_gateway_rest_api.count_api.root_resource_id
-  path_part   = "myresource"  # The URL path for your resource
+  path_part   = "myresource" # The URL path for your resource
 }
 
 resource "aws_api_gateway_method" "count_get_method" {
@@ -460,7 +479,7 @@ resource "aws_api_gateway_deployment" "count_deployment" {
     aws_api_gateway_integration.count_post_integration,
   ]
   rest_api_id = aws_api_gateway_rest_api.count_api.id
-  stage_name  = "prod" 
+  stage_name  = "prod"
 }
 
 resource "aws_lambda_permission" "apigw_lambda" {
@@ -468,64 +487,56 @@ resource "aws_lambda_permission" "apigw_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.website_counter_lambda.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.count_api.id}/*"
+  source_arn    = "arn:aws:execute-api:${var.myregion}:${var.accountId}:${aws_api_gateway_rest_api.count_api.id}/*"
 }
 
-resource "aws_cloudfront_cache_policy" "my_cache_policy" {
-  name        = "my-cache-policy"
-  default_ttl = 3600  # Set the default time-to-live in seconds
 
-  # Define behaviors for different paths or request patterns if needed
-  dynamic "cache_behavior" {
-    for_each = ["/*"]  # You can specify paths or patterns here
-    content {
-      path_pattern = cache_behavior.key
-      min_ttl      = 0  # Set minimum time-to-live in seconds
-      max_ttl      = 3600  # Set maximum time-to-live in seconds
-      default_ttl  = 3600  # Set default time-to-live in seconds
-      viewer_protocol_policy = "https-only"  # Use HTTPS
-    }
-  }
-}
 
 resource "aws_cloudfront_origin_request_policy" "my_origin_request_policy" {
-  name = "my-origin-request-policy"
+  name    = "HTTPS-ALB-CACHE-POLICY"
+  comment = "my origin request policy"
 
-  query_string {
-    behavior = "none"  # Don't forward query strings
+  cookies_config {
+    cookie_behavior = "none"
   }
 
-  cookies {
-    forward = "none"  # Don't forward cookies
+  headers_config {
+    header_behavior = "whitelist"
+    headers {
+      items = ["host"]
+    }
   }
 
-  headers {
-    forward = "none"  # Don't forward custom headers
-  }
-
-  http_method {
-    behavior = "whitelist"
-    items    = ["GET", "HEAD"]  # Allow GET and HEAD methods
+  query_strings_config {
+    query_string_behavior = "none"
   }
 }
+
+
 
 
 resource "aws_cloudfront_distribution" "my_cdn" {
+  aliases = ["web.kchenfs.com"]
   origin {
     domain_name = aws_lb.container_alb.dns_name
     origin_id   = "my-alb-origin"
+    custom_header {
+      name  = "X-Custom-Header"
+      value = "random-value-1234567890"
+    }
     custom_origin_config {
-    http_port              = 80
-    https_port             = 443
-    origin_protocol_policy = "https-only"
-    origin_ssl_protocols   = ["TLSv1.2"]
-  }
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "match-viewer"
+      origin_ssl_protocols   = ["TLSv1.2"]
+
+    }
   }
 
-  enabled             = true                
-  http_version        = "http3"             
+  enabled             = true
+  http_version        = "http3"
   default_root_object = "index.html"
-  price_class         = "PriceClass_100"   
+  price_class         = "PriceClass_100"
   restrictions {
     geo_restriction {
       restriction_type = "none"
@@ -533,20 +544,20 @@ resource "aws_cloudfront_distribution" "my_cdn" {
     }
   }
   viewer_certificate {
-    acm_certificate_arn      = aws_acm_certificate.alb_cert.arn
+    acm_certificate_arn      = "arn:aws:acm:us-east-1:798965869505:certificate/701a8a27-1ff7-49a8-8277-48e2109e9f0e"
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
   }
 
   default_cache_behavior {
-    target_origin_id       = "my-alb-origin"
-    allowed_methods       = ["GET", "HEAD"]
-    cached_methods        = ["GET", "HEAD"]
-    min_ttl               = 0
-    default_ttl           = 3600
-    max_ttl               = 86400
-    viewer_protocol_policy = "https-only"
-    cache_policy_id = aws_cloudfront_cache_policy.my_cache_policy.id
+    target_origin_id         = "my-alb-origin"
+    allowed_methods          = ["GET", "HEAD"]
+    cached_methods           = ["GET", "HEAD"]
+    min_ttl                  = 0
+    default_ttl              = 3600
+    max_ttl                  = 86400
+    viewer_protocol_policy   = "redirect-to-https"
+    cache_policy_id          = "658327ea-f89d-4fab-a63d-7e88639e58f6"
     origin_request_policy_id = aws_cloudfront_origin_request_policy.my_origin_request_policy.id
   }
 }
