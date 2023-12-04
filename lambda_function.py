@@ -315,7 +315,7 @@ def handle_sns_message(event):
     origination_number = sns_message['destinationNumber']
     destination_number = sns_message['originationNumber']
     customer_message = sns_message['messageBody']
-    print(customer_message)
+    print("This is the customer message", customer_message)
     lex_response = lex_client.recognize_text(
         botId = os.environ['LEX_BOT_ID'],
         botAliasId = os.environ['LEX_ALIAS_ID'],
@@ -324,12 +324,13 @@ def handle_sns_message(event):
         text=customer_message
     )
 
-    print("Lex Response:", lex_response)
+    print("Lex Response in the handle_sns_message function:", lex_response)
 
     messages = [message['content'] for message in lex_response['messages']]
-
+    print ("this is in handle_sns_messages", messages)
     # Send the complete message as a list
     response = send_lex_response(app_id, origination_number, destination_number, messages)
+    print(response)
 
     return lex_response
 
@@ -430,7 +431,7 @@ def lambda_handler(event, context):
                 'messages': [
                     {
                         'contentType': 'PlainText',
-                        'content': "Hello! Welcome to Momotaro Sushi. Here is our menu: [Momotaro Menu](https://momotarosushi.s3.ca-central-1.amazonaws.com/momotaro-sushi-online-menu-.pdf)"
+                        'content': "Hello! Welcome to Momotaro Sushi. Here is our menu: https://momotarosushi.s3.ca-central-1.amazonaws.com/momotaro-sushi-online-menu-.pdf"
                     },
                     {
                         'contentType': 'PlainText',
@@ -606,8 +607,6 @@ def lambda_handler(event, context):
                         'ItemPrices': item_prices  # Store the list of item prices
 
                     })
-                    print("sessionAttributes after spacy and fuzzy", session_attributes)    
-                    # Call confirm_intent function to generate the confirmation message
                     return {
                         'sessionState': {
                             'dialogAction': {
