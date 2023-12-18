@@ -12,7 +12,7 @@ def lambda_handler(event, context):
     )
     
     visit_count = response['Item']['CounterValue'] 
-    visit_count = (int(visit_count) + 1)
+    visit_count = str(int(visit_count) + 1)
     
     response = table.put_item(
         Item = {
@@ -26,7 +26,7 @@ def lambda_handler(event, context):
         'headers': {
             'Access-Control-Allow-Headers': 'Content-Type',
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'POST'
+            'Access-Control-Allow-Methods': '*'
         },
         'body': visit_count
     }

@@ -142,15 +142,15 @@
                 url: 'https://6rm77s2oyg.execute-api.ca-central-1.amazonaws.com/prod/myresource', // Replace with your actual retrieve API endpoint
                 method: 'GET',
                 success: function (data) {
-                    // Update the visitor count element with the retrieved count
-                    visitorCountElement.text(data.CounterValue);
+                    // Update the visitor count element with the retrieved count (convert to string)
+                    visitorCountElement.text(String(data.CounterValue));
                 },
                 error: function () {
                     // Handle errors if the API call to retrieve the count fails
                     visitorCountElement.text('N/A');
                 }
             });
-        }
+        }        
 
         // Call the incrementVisitorCount function on page load
         $(document).ready(function () {
