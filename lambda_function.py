@@ -255,36 +255,6 @@ def generate_receipt(order_date, order_id, customer_name, customer_phone, ordere
     )
     return receipt_content
 
-def confirm_intent(intent, slots, name, ordered_items, pickup_time, phone_number):
-    confirmation_prompt = (
-        f"Thanks, {name}! Here's a summary of your order:\n"
-        f"You have ordered {ordered_items}.\n"
-        f"Your order will be ready for pickup at {pickup_time}.\n"
-        f"We will contact you at {phone_number} if needed.\n"
-        f"Would you like to confirm your order?"
-    )
-
-    return {
-        'sessionState': {
-            'dialogAction': {
-                'type': 'ConfirmIntent',
-                'intentName': intent,
-                'slots': slots
-            },
-            'intent': {
-                'name': intent,
-                'slots': slots
-            },
-            'sessionAttributes': session_attributes
-        },
-        'messages': [
-            {
-                'contentType': 'PlainText',
-                'content': confirmation_prompt
-            }
-        ]
-    }
-
 def send_lex_response(app_id, origination_number, destination_number, messages):
     responses = []
     for message in messages:
@@ -316,7 +286,7 @@ def handle_sns_message(event):
     destination_number = sns_message['originationNumber']
     customer_message = sns_message['messageBody']
     print("This is the customer message", customer_message)
-    lex_response = lex_client.recognize_text(
+    response = lex_client.recognize_text(
         botId = os.environ['LEX_BOT_ID'],
         botAliasId = os.environ['LEX_ALIAS_ID'],
         localeId = 'en_US',
@@ -324,15 +294,15 @@ def handle_sns_message(event):
         text=customer_message
     )
 
-    print("Lex Response in the handle_sns_message function:", lex_response)
+    print("Lex Response in the handle_sns_message function:", response)
 
-    messages = [message['content'] for message in lex_response['messages']]
+    messages = [message['content'] for message in response['messages']]
     print ("this is in handle_sns_messages", messages)
     # Send the complete message as a list
     response = send_lex_response(app_id, origination_number, destination_number, messages)
     print(response)
 
-    return lex_response
+    return response
 
 def prepare_line_items(session_attributes):
     # Extract relevant information from session_attributes
@@ -403,6 +373,9 @@ def send_email(sender_email, customer_email, subject, body):
 
 
 def lambda_handler(event, context):
+    session_attributes = event['sessionState']['sessionAttributes']
+    print(session_attributes)
+    response = None
     print("top of the tree in the lambda handler")
     print(event)
     print(context)
@@ -465,11 +438,13 @@ def lambda_handler(event, context):
             }
      
         elif intent == 'OrderItem':
-           
+
+            print(session_attributes)
             validation_result = validate(slots)
             confirmation_state = event['interpretations'][0]['intent']['confirmationState']
 
             if confirmation_state == 'Confirmed':
+                print(session_attributes)
                 ordered_items = session_attributes['ItemChoice']
                 subtotal_price = session_attributes['BillSubtotal']
                 tax_amount = session_attributes['BillTaxAmount']
@@ -607,7 +582,12 @@ def lambda_handler(event, context):
                         'ItemPrices': item_prices  # Store the list of item prices
 
                     })
-                    return {
+
+                    confirmation_prompt = (
+    f"Thanks, {name}, you have ordered {ordered_items} and the order will be ready for pickup at {pickup_time}. Would you like to confirm your order?"
+                        )
+
+                    response = {
                         'sessionState': {
                             'dialogAction': {
                                 'type': 'ConfirmIntent',
@@ -623,11 +603,7 @@ def lambda_handler(event, context):
                         'messages': [
                             {
                                 'contentType': 'PlainText',
-                                'content': f"Thanks, {name}! Here's a summary of your order:\n"
-                        f"You have ordered {ordered_items}.\n"
-                        f"Your order will be ready for pickup at {pickup_time}.\n"
-                        f"We will contact you at {phone_number} if needed.\n"
-                        f"Would you like to confirm your order?"
+                                'content': confirmation_prompt
                             }
                         ]
                     }
@@ -819,7 +795,7 @@ def lambda_handler(event, context):
 
 
     # Return the appropriate response if needed
-    print("This is the Lex's Response", response)
+    ("Lex's responses successfully sent", response)
     return response  # Return the response if it's needed for the Lambda function's behavior
 
 #perhaps we make another elif block where if all slot values are filled, we run the parsing function

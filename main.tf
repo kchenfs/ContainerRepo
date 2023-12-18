@@ -157,12 +157,6 @@ resource "aws_security_group" "security_group_personal_website" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "allow-lb-traffic" {
-  security_group_id = aws_security_group.security_group_personal_website.id
-
-  referenced_security_group_id = aws_security_group.alb_sg.id
-  ip_protocol                  = -1
-}
 
 
 # Create a VPC
@@ -443,14 +437,23 @@ resource "aws_api_gateway_method_response" "count_get_response" {
   resource_id = aws_api_gateway_resource.count_resource.id
   http_method = aws_api_gateway_method.count_get_method.http_method
   status_code = "200"
+  
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
 }
 
 resource "aws_api_gateway_method_response" "count_post_response" {
-  rest_api_id = aws_api_gateway_rest_api.count_api.id
-  resource_id = aws_api_gateway_resource.count_resource.id
-  http_method = aws_api_gateway_method.count_post_method.http_method
-  status_code = "200"
+  rest_api_id   = aws_api_gateway_rest_api.count_api.id
+  resource_id   = aws_api_gateway_resource.count_resource.id
+  http_method   = aws_api_gateway_method.count_post_method.http_method
+  status_code   = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Origin" = true
+  }
 }
+
 
 
 resource "aws_api_gateway_integration_response" "count_get_response" {
