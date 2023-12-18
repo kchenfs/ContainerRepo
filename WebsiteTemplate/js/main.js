@@ -157,12 +157,6 @@
             incrementVisitorCount();
         });
 
-        // Call the incrementVisitorCount function on page load
-        $(document).ready(function () {
-            incrementVisitorCount();
-            retrieveVisitorCount();
-        });
-        
 
     
         // On Document Load
