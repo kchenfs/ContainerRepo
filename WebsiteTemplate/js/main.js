@@ -143,7 +143,7 @@
                 method: 'GET',
                 success: function (data) {
                     // Update the visitor count element with the retrieved count (convert to string)
-                    visitorCountElement.text(data.body.CounterValue);
+                    visitorCountElement.text(data.CounterValue);
                 },
                 error: function () {
                     // Handle errors if the API call to retrieve the count fails
