@@ -119,6 +119,8 @@
     
         // Add the visitor count code below
         var visitorCountElement = $('#visitor-count');
+        console.log(visitorCountElement); // Add this line
+
 
         function incrementVisitorCount() {
             // Make an API call to increment the visitor count
