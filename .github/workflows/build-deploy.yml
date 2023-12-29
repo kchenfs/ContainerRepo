@@ -31,26 +31,30 @@ jobs:
         ls -al
         # Build your Docker image here
         docker build -t my-website-image:latest .
+        echo "Successfully built the docker image"
 
     - name: Tag Docker Image
       run: |
         # Tag the Docker image with the ECR repository URL
         docker tag my-website-image:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
+        echo "successfully tag the docker image"
 
     - name: Push Docker Image to AWS ECR
       run: |
         # Push the Docker image to ECR
         docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/container-repo:latest
+        echo "successfully push the docker image"
 
     - name: Update ECS/Fargate Service
       run: |
         aws ecs update-service --cluster kchenfs-cluster --service kchenfs-service --force-new-deployment
+        echo "ecs service upgraded"
 
     - name: Deploy Lambda Function
       run: |
         pwd
         ls -l
         echo "Zipping artifacts and pushing to S3..."
-        zip lambda_function.zip lambda_function.py
+        zip lambda_function.zip WebsiteCounter.py
         aws s3 cp ./lambda_function.zip s3://kencfswebsite/
         aws lambda update-function-code --function-name "WebsiteCounterLambda" --s3-bucket "kencfswebsite" --s3-key "lambda_function.zip"
