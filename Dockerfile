@@ -8,5 +8,5 @@ WORKDIR /usr/share/nginx/html
 COPY WebsiteTemplate /usr/share/nginx/html/
 
 # Expose port 8081 for the web server
-EXPOSE 80
+EXPOSE 8081
 

@@ -1,747 +1,427 @@
 <!DOCTYPE html>
-<html lang="en" class="no-js">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"> 
-    <title>Ken C - Resume/CV</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="description" content="BreezyCV - Resume / CV / vCard Template" />
-    <meta name="keywords" content="vcard, resposnive, retina, resume, jquery, css3, bootstrap, Material CV, portfolio" />
-    <meta name="author" content="lmpixels" />
-    <link rel="shortcut icon" href="favicon.ico">
-
-
-    <link rel="stylesheet" href="css/reset.css" type="text/css">
-    <link rel="stylesheet" href="css/bootstrap-grid.min.css" type="text/css">
-    <link rel="stylesheet" href="css/animations.css" type="text/css">
-    <link rel="stylesheet" href="css/perfect-scrollbar.css" type="text/css">
-    <link rel="stylesheet" href="css/owl.carousel.css" type="text/css">
-    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
-    <link rel="stylesheet" href="css/main.css" type="text/css">
-  </head>
-
-  <body>
-    <!-- Animated Background -->
-    <div class="lm-animated-bg" style="background-image: url(img/main_bg.png);"></div>
-    <!-- /Animated Background -->
-
-    <!-- Loading animation -->
-    <div class="preloader">
-      <div class="preloader-animation">
-        <div class="preloader-spinner">
-        </div>
-      </div>
-    </div>
-    <!-- /Loading animation -->
-
-    <div class="page">
-      <div class="page-content">
-
-          <header id="site_header" class="header mobile-menu-hide">
-            <div class="header-content">
-              <div class="header-photo">
-                <img src="img/main_photo.jpg" alt="Alex Smith">
-              </div>
-              <div class="header-titles">
-                <h2>Ken Chen</h2>
-                <h4>Cloud Developer</h4>
-              </div>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ken Chen - Cloud Engineer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- External JavaScript -->
+    <script src="/visitor-counter.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#0f172a',
+                        'secondary': '#1e293b',
+                        'accent': '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-xl font-bold text-primary">Ken Chen</div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#about" class="text-gray-600 hover:text-accent transition-colors">About</a>
+                    <a href="#experience" class="text-gray-600 hover:text-accent transition-colors">Experience</a>
+                    <a href="#projects" class="text-gray-600 hover:text-accent transition-colors">Projects</a>
+                    <a href="#education" class="text-gray-600 hover:text-accent transition-colors">Education</a>
+                    <a href="#contact" class="text-gray-600 hover:text-accent transition-colors">Contact</a>
+                </div>
+                <button id="mobile-menu-btn" class="md:hidden text-gray-600">
+                    <i class="fas fa-bars"></i>
+                </button>
             </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-gray-200">
+            <div class="px-4 py-2 space-y-2">
+                <a href="#about" class="block text-gray-600 hover:text-accent transition-colors py-2">About</a>
+                <a href="#experience" class="block text-gray-600 hover:text-accent transition-colors py-2">Experience</a>
+                <a href="#projects" class="block text-gray-600 hover:text-accent transition-colors py-2">Projects</a>
+                <a href="#education" class="block text-gray-600 hover:text-accent transition-colors py-2">Education</a>
+                <a href="#contact" class="block text-gray-600 hover:text-accent transition-colors py-2">Contact</a>
+            </div>
+        </div>
+    </nav>
 
-            <ul class="main-menu">
-              <li class="active">
-                <a href="#home" class="nav-anim">
-                  <span class="menu-icon lnr lnr-home"></span>
-                  <span class="link-text">Home</span>
-                </a>
-              </li>
-              <li>
-                <a href="#about-me" class="nav-anim">
-                  <span class="menu-icon lnr lnr-user"></span>
-                  <span class="link-text">About Me</span>
-                </a>
-              </li>
-              <li>
-                <a href="#resume" class="nav-anim">
-                  <span class="menu-icon lnr lnr-graduation-hat"></span>
-                  <span class="link-text">Resume</span>
-                </a>
-              </li>
-              <li>
-                <a href="#portfolio" class="nav-anim">
-                  <span class="menu-icon lnr lnr-briefcase"></span>
-                  <span class="link-text">Portfolio</span>
-                </a>
-              </li>
-              <li>
-                <a href="#blog" class="nav-anim">
-                  <span class="menu-icon lnr lnr-book"></span>
-                  <span class="link-text">Blog</span>
-                </a>
-              </li>
-              <li>
-                <a href="#contact" class="nav-anim">
-                  <span class="menu-icon lnr lnr-envelope"></span>
-                  <span class="link-text">Contact</span>
-                </a>
-              </li>
-            </ul>
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 bg-gradient-to-br from-primary via-secondary to-primary text-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="w-32 h-32 rounded-full mx-auto mb-8 overflow-hidden border-4 border-white/20 shadow-lg">
+<img src="/img/me.jpg" alt="Ken Chen" class="w-full h-full object-cover" style="object-position: 30% top;">                </div>
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">Ken Chen</h1>
+                <p class="text-xl md:text-2xl text-blue-200 mb-8">Senior Technical Specialist & Cloud Engineer</p>
+                <p class="text-lg text-blue-100 mb-8">Toronto, Ontario, Canada</p>
+                <div class="flex justify-center space-x-6">
+                    <a href="https://linkedin.com/in/kenchen-fs" target="_blank" class="bg-accent hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2">
+                        <i class="fab fa-linkedin"></i>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://github.com/kchenfs" target="_blank" class="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2">
+                        <i class="fab fa-github"></i>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="#contact" class="border border-white hover:bg-white hover:text-primary text-white px-6 py-3 rounded-lg transition-colors flex items-center space-x-2">
+                        <i class="fas fa-envelope"></i>
+                        <span>Email</span>
+                    </a>
+                </div>
+                <!-- Visitor Counter -->
+                <div class="mt-12 text-center">
+                    <div class="inline-block bg-white/10 backdrop-blur-sm rounded-lg px-6 py-3">
+                        <p class="text-sm text-blue-200">Page Visitors</p>
+                        <p class="text-2xl font-bold" id="visitor-count">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <div class="social-links">
-              <ul>
-                <li><a href="https://www.linkedin.com/in/kchenfs/" target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                <li><a href="https://github.com/kchenfs/" target="_blank"><i class="fab fa-github"></i></a></li>
-              </ul>
+    <!-- About Section -->
+    <section id="about" class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">About Me</h2>
+            <div class="prose prose-lg mx-auto text-center">
+                <p class="text-xl text-gray-600 leading-relaxed">
+                    I'm a Senior Technical Specialist at Canadian Tire Corporation with a strong interest in designing solutions to technical challenges using cloud technologies and automation. 
+                    My expertise lies mainly in AWS services, complemented by experience in Azure, DevOps practices, and enterprise IT solutions. 
+                    My career spans from providing VIP support to C-suite executives to building serverless applications.
+                </p>
+                <p class="text-lg text-gray-600 mt-6">
+                    With multiple AWS and Azure certifications, I enjoy leveraging cloud services to solve technical challenges. Whether it's scaling an e-commerce site to serve millions of users 
+                    or migrating legacy systems to modern cloud architecture, I enjoy tackling these challenges head-on. When I'm not working with cloud infrastructure, 
+                    I stay updated on industry trends and explore how companies leverage technology to drive innovation.
+                </p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Experience Section -->
+    <section id="experience" class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Experience</h2>
+            <div class="space-y-8">
+                <!-- Experience Item 1 -->
+                <div class="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition-shadow">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary">Senior Technical Specialist</h3>
+                            <p class="text-accent font-medium">Canadian Tire Corporation</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">March 2024 - Present</p>
+                    </div>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• Designated VIP IT support for C-suite executives, senior vice presidents, and Board of Directors</li>
+                        <li>• Developed asset tracking scripts using PowerShell and Exchange module for Outlook management</li>
+                        <li>• Administered Entra ID and Active Directory for user lifecycle management and security groups</li>
+                        <li>• Managed mobile device deployments using Intune and Apple Business Manager</li>
+                        <li>• Utilized Microsoft Defender and Purview for security monitoring and email management</li>
+                    </ul>
+                </div>
+
+                <!-- Experience Item 2 -->
+                <div class="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition-shadow">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary">Technical Support Engineer</h3>
+                            <p class="text-accent font-medium">ComputerTalk Technology Inc.</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">February 2023 - March 2024</p>
+                    </div>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• Provided L1 and L2 support for enterprise applications on Windows Server IIS in 24/7 environment</li>
+                        <li>• Used vCenter and Bomgar for server maintenance and snapshot management</li>
+                        <li>• Configured Citrix Studio policies for XenApp server application access</li>
+                        <li>• Ran SQL queries to troubleshoot report generation and data discrepancies</li>
+                        <li>• Resolved SolarWinds alerts across Toronto, Chicago, and Montreal data centers</li>
+                    </ul>
+                </div>
+
+                <!-- Experience Item 3 -->
+                <div class="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition-shadow">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold text-primary">Platinum Support Analyst</h3>
+                            <p class="text-accent font-medium">Questrade Financial Group</p>
+                        </div>
+                        <p class="text-gray-500 text-sm">November 2021 - January 2023</p>
+                    </div>
+                    <ul class="text-gray-600 space-y-2">
+                        <li>• Resolved 120+ tickets weekly across investment accounts, trading, and technical issues</li>
+                        <li>• Supported complex financial instruments including forex, equities, and options trading</li>
+                        <li>• Provided technical troubleshooting for trading platforms and account management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Featured Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-primary">TableTap (OrderPal)</h3>
+                            <i class="fas fa-mobile-alt text-accent text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            Mobile web app for QR code dining. Built with React frontend, AWS serverless backend 
+                            using API Gateway, Lambda, DynamoDB, and SQS for event-driven architecture.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">React</span>
+                            <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">AWS Lambda</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">DynamoDB</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">SQS</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">IoT Core</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a href="https://github.com/kchenfs/OrderPal" target="_blank" class="text-accent hover:text-blue-600 text-sm font-medium">
+                                <i class="fab fa-github mr-1"></i>Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-primary">MomotaroBot</h3>
+                            <i class="fas fa-robot text-accent text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            Serverless chatbot using AWS Lex and Lambda for food ordering. Infrastructure deployed 
+                            with Terraform, integrated with Stripe, and includes CI/CD pipeline with GitHub Actions.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">AWS Lex</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Terraform</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Python</span>
+                            <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Stripe API</span>
+                            <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">GitHub Actions</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a href="https://github.com/kchenfs/Momotaro" target="_blank" class="text-accent hover:text-blue-600 text-sm font-medium">
+                                <i class="fab fa-github mr-1"></i>Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold text-primary">Container Website</h3>
+                            <i class="fas fa-globe text-accent text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600 mb-4">
+                            CV website hosted on NGINX container using AWS Fargate, Docker, and ECR. 
+                            Features CI/CD pipeline, Terraform infrastructure, and visitor counter with API Gateway.
+                        </p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Docker</span>
+                            <span class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">AWS Fargate</span>
+                            <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Terraform</span>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">NGINX</span>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">ECR</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a href="https://github.com/kchenfs/ContainerRepo" target="_blank" class="text-accent hover:text-blue-600 text-sm font-medium">
+                                <i class="fab fa-github mr-1"></i>Code
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Education & Certifications Section -->
+    <section id="education" class="py-20 bg-gray-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-center mb-12">Education & Certifications</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Education -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-primary">Education</h3>
+                    <div class="bg-white rounded-lg shadow-sm p-6">
+                        <h4 class="text-xl font-semibold text-primary mb-2">Honors Bachelor of Music</h4>
+                        <p class="text-accent font-medium mb-2">University of Toronto</p>
+                        <p class="text-gray-500 text-sm mb-4">Minor in Economics</p>
+                        <p class="text-gray-600">
+                            Comprehensive study in music performance and theory with a focus on economics, 
+                            developing analytical and problem-solving skills that translate well to technical fields.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Certifications -->
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6 text-primary">Certifications</h3>
+                    <div class="space-y-4">
+                        <!-- AWS Certifications -->
+                        <div class="bg-white rounded-lg shadow-sm p-4">
+                            <h4 class="font-semibold text-primary mb-3 flex items-center">
+                                <i class="fab fa-aws text-orange-600 text-xl mr-3"></i>
+                                AWS Certifications
+                            </h4>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded">CLF-C02</span>
+                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded">SOA-C02</span>
+                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded">DVA-C02</span>
+                                <span class="bg-orange-100 text-orange-800 px-2 py-1 rounded">SAA-C03</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Azure Certifications -->
+                        <div class="bg-white rounded-lg shadow-sm p-4">
+                            <h4 class="font-semibold text-primary mb-3 flex items-center">
+                                <i class="fab fa-microsoft text-blue-600 text-xl mr-3"></i>
+                                Azure Certifications
+                            </h4>
+                            <div class="grid grid-cols-2 gap-2 text-sm">
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">AZ-104</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">AZ-140</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">AZ-204</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">AZ-305</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">AZ-500</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">AZ-900</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">SC-200</span>
+                                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">SC-900</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Terraform Certification -->
+                        <div class="bg-white rounded-lg shadow-sm p-4">
+                            <h4 class="font-semibold text-primary mb-3 flex items-center">
+                                <i class="fas fa-code text-purple-600 text-xl mr-3"></i>
+                                Infrastructure as Code
+                            </h4>
+                            <span class="bg-purple-100 text-purple-800 text-sm px-2 py-1 rounded">Terraform Associate (003)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-primary text-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold mb-8">Let's Connect</h2>
+            <p class="text-xl text-blue-200 mb-12">
+                I'm always interested in new opportunities and collaborations. 
+                Feel free to reach out if you'd like to discuss cloud architecture, DevOps practices, or just chat about technology!
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <a href="mailto:kchenfs@gmail.com" class="group">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-colors">
+                        <i class="fas fa-envelope text-3xl mb-4 group-hover:text-accent transition-colors"></i>
+                        <h3 class="text-lg font-semibold mb-2">Email</h3>
+                        <p class="text-blue-200">kchenfs@gmail.com</p>
+                    </div>
+                </a>
+                
+                <a href="https://linkedin.com/in/kenchen-fs" target="_blank" class="group">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-colors">
+                        <i class="fab fa-linkedin text-3xl mb-4 group-hover:text-accent transition-colors"></i>
+                        <h3 class="text-lg font-semibold mb-2">LinkedIn</h3>
+                        <p class="text-blue-200">Connect with me</p>
+                    </div>
+                </a>
+                
+                <a href="https://github.com/kchenfs" target="_blank" class="group">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6 hover:bg-white/20 transition-colors">
+                        <i class="fab fa-github text-3xl mb-4 group-hover:text-accent transition-colors"></i>
+                        <h3 class="text-lg font-semibold mb-2">GitHub</h3>
+                        <p class="text-blue-200">View my code</p>
+                    </div>
+                </a>
             </div>
             
-            <div class="visitor-counter">
-              <p>You are the <span id="visitor-count"></span>th person to visit this page.</p>
-            </div>            
-
-
-            <div class="header-buttons">
-              <a href="#" target="_blank" class="btn btn-primary">Download CV</a>
+            <div class="mt-12 text-center">
+                <p class="text-blue-200 mb-2">📱 416-880-7388</p>
+                <p class="text-blue-200">📍 Toronto, Ontario, Canada</p>
             </div>
+        </div>
+    </section>
 
-            <div class="copyrights">© 2020 All rights reserved.</div>
-          </header>
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-8">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>&copy; 2024 Ken Chen. Built for the Cloud Resume Challenge.</p>
+        </div>
+    </footer>
 
-          <!-- Mobile Navigation -->
-          <div class="menu-toggle">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <!-- End Mobile Navigation -->
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-          <!-- Arrows Nav -->
-          <div class="lmpixels-arrows-nav">
-            <div class="lmpixels-arrow-right"><i class="lnr lnr-chevron-right"></i></div>
-            <div class="lmpixels-arrow-left"><i class="lnr lnr-chevron-left"></i></div>
-          </div>
-          <!-- End Arrows Nav -->
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
 
-          <div class="content-area">
-            <div class="animated-sections">
-              <!-- Home Subpage -->
-              <section data-id="home" class="animated-section start-page">
-                <div class="section-content vcentered">
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerOffset = 80;
+                    const elementPosition = target.offsetTop;
+                    const offsetPosition = elementPosition - headerOffset;
 
-                    <div class="row">
-                      <div class="col-sm-12 col-md-12 col-lg-12">
-                        <div class="title-block">
-                          <h2>Ken Chen12333333</h2>
-                          <div class="owl-carousel text-rotation">                                    
-                            <div class="item">
-                              <div class="sp-subtitle">Cloud Developer</div>
-                            </div>
-                            
-                            <div class="item">
-                              <div class="sp-subtitle">Fitness-Food</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
 
-                </div>
-              </section>
-              <!-- End of Home Subpage -->
+                    // Close mobile menu if open
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
 
-              <!-- About Me Subpage -->
-              <section data-id="about-me" class="animated-section">
-                <div class="section-content">
-                  <div class="page-title">
-                    <h2>About <span>Me</span></h2>
-                  </div>
+        // Visitor counter will be handled by external script
 
-                  <!-- Personal Information -->
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-7">
-                      <p>I am a Technical Support Analyst skilled in IT troubleshooting and system administration for an Enterprise SaaS in the public and private sector. Experienced with Amazon Web Services and system administration skills such as Active Directory, IIS web applications, Powershell scripting, and Window Server management in a on-premises 24/7 private cloud and hybrid cloud IaaS environments.
-                        I have a demonstrated history of turning difficult high sev tickets into successes by pinpointing problem areas, eliminating obstacles, implementing process improvements, and improving team dynamics and morale. My enthusiastic attitude, strong work ethic, creative problem solving, and commitment to continued professional education are an asset to any team or project. </p>
-                    </div>
-                  </div>
-                  <!-- End of Personal Information -->
+        // Update visitor count on page load
+        window.addEventListener('load', updateVisitorCount);
 
-                  <div class="white-space-50"></div>
+        // Add some interactive animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
 
-                  <!-- Services -->
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                      <div class="block-title">
-                        <h3>What <span>I Do</span></h3>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="col-inner">
-                        <div class="info-list-w-icon">
-                          <div class="info-block-w-icon">
-                            <div class="ci-icon">
-                              <i class="lnr lnr-store"></i>
-                            </div>
-                            <div class="ci-text">
-                              <h4>Cloud Computing</h4>
-                              <p> Familiarity with cloud platforms like AWS and Azure, setting up infrasturcture using IaC tools like Terraform, with a strong understanding of what services each cloud provider offers.</p>
-                            </div>
-                          </div>
-                          <div class="info-block-w-icon">
-                            <div class="ci-icon">
-                              <i class="lnr lnr-laptop-phone"></i>
-                            </div><div class="ci-text">
-                              <h4>Containerization</h4>
-                              <p>Developing applications on modern compute containerization technologies like Docker and AWS Fargate, essential for managing and scaling applications efficiently.</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="col-inner">
-                        <div class="info-list-w-icon">
-                          <div class="info-block-w-icon">
-                            <div class="ci-icon">
-                              <i class="lnr lnr-pencil"></i>
-                            </div>
-                            <div class="ci-text">
-                              <h4>Automation Skills</h4>
-                              <p>Having an automate where possible mindset, expertise in scripting languages like Python, Shell, or Powershell to automate manual processes.</p>
-                            </div>
-                          </div>
-                          <div class="info-block-w-icon">
-                            <div class="ci-icon">
-                              <i class="lnr lnr-flag"></i>
-                            </div><div class="ci-text">
-                              <h4>Continuous Integration/Continuous Deployment (CI/CD)</h4>
-                              <p>Knowledge of CI/CD technologies such as Github Actions, build pipelines to streamline code build and deployment process.</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- End of Services -->
-                </div>
-              </section>
-              <!-- End of About Me Subpage -->
-
-              <!-- Resume Subpage -->
-              <section data-id="resume" class="animated-section">
-                <div class="section-content">  
-                  <div class="page-title">
-                    <h2>Resume</h2>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-7">
-
-                      <div class="block-title">
-                        <h3>Experience</h3>
-                      </div>
-                      
-                      <div class="timeline timeline-second-style clearfix">
-                        <div class="timeline-item clearfix">
-                          <div class="left-part">
-                            <h5 class="item-period">2023 - Current</h5>
-                            <span class="item-company">ComputerTalk</span>
-                          </div>
-                          <div class="divider"></div>
-                          <div class="right-part">
-                            <h4 class="item-title">Technical Support Analyst</h4>
-                            <ul> <!-- Start of unordered list -->
-                              <li>Supporting Microsoft Windows OS and IIS web applications in a data center and 24/7 cloud environment.</li>
-                              <li>Resolving 30+ weekly tickets for an enterprise SaaS with a 91% SLA compliance rate, including P1s and P2s, ensuring high client satisfaction and reducing cost implications for noncompliance.</li>
-                              <li>Utilized SQL queries to identify and resolve database-related issues, includes report calculations, call audits, data inconsistencies, and the client’s Azure GUID for SSO integration.</li>
-                              <li>Conducting failovers, log analysis, Windows Server maintenance/restarts, and setting up/resolving alerts on virtual machines.</li>
-                              <li>Automating system admin tasks through PowerShell scripting, notably Active Directory user management, file replacement, and managing Windows services.</li>
-                              <li>Reducing high-severity ticket volume by 15% using server monitoring and alerting tools such as SolarWinds to track server performance and vulnerabilities.</li>
-                              <li>Using VMware vSphere to deploy updates on Citrix XenApp servers, upgrading and quality assurance testing company software.</li>
-                              <li>Escalating to 3rd party vendors such as Telus, Bell, and Microsoft for VOIP related issues, acting as an escalation point on technical bridges.</li>
-                              <li>Developing knowledge articles for common issues, tasks, and solutions within the HelpDesk to streamline ticket resolutions.</li>
-                            </ul> <!-- End of unordered list -->
-                          </div>
-                        </div>
-
-                        <div class="timeline-item clearfix">
-                          <div class="left-part">
-                            <h5 class="item-period">2021 - 2023</h5>
-                            <span class="item-company">Questrade Financial Group</span>
-                          </div>
-                          <div class="divider"></div>
-                          <div class="right-part">
-                            <h4 class="item-title">Platinum Support Specialist</h4>
-                            <ul>
-                              <li>Addressing 120+ customer cases weekly spanning investment accounts, funds, transactions, forex, equities, options technical troubleshooting for high equity clients by doing screenshares</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="white-space-50"></div>
-
-                      <div class="block-title">
-                        <h3>Education</h3>
-                      </div>
-
-                      <div class="timeline timeline-second-style clearfix">
-                        <div class="timeline-item clearfix">
-                          <div class="left-part">
-                            <h5 class="item-period">2017 - Current</h5>
-                            <span class="item-company">University of Toronto</span>
-                          </div>
-                          <div class="divider"></div>
-                          <div class="right-part">
-                            <h4 class="item-title">Bachelor of Music</h4>
-                            <ul>
-                              <li>Minor in Economics</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Skills & Certificates -->
-                    <div class="col-xs-12 col-sm-5">
-                      <!-- Knowledges -->
-                      <div class="block-title">
-                        <h3>Knowledges</h3>
-                      </div>
-
-                      <ul class="knowledges">
-                        <li>Python</li>
-                        <li>JavaScript</li>
-                        <li>SQL</li>
-                        <li>NoSQL</li>
-                        <li>Bash</li>
-                        <li>PowerShell</li>
-                        <li>YAML</li>
-                        <li>JSON</li>
-                        <li>AWS</li>
-                        <li>Azure</li>
-                        <li>Terraform</li>
-                        <li>CloudFormation</li>
-                        <li>Docker</li>
-                        <li>ECS</li>
-                        <li>Fargate</li>
-                        <li>Active Directory (AD)</li>
-                        <li>Citrix</li>
-                        <li>Bomgar</li>
-                        <li>GitHub</li>
-                        <li>Git</li>
-                        <li>Cloud Computing</li>
-                        <li>Windows Server</li>
-                        <li>Linux</li>
-                        <li>VMware</li>
-                        <li>Microservices</li>
-                        <li>CI/CD</li>
-                        <li>AWS Lambda</li>
-                        <li>Serverless</li>
-                        <li>Frontend</li>
-                        <li>Backend</li>
-                        <li>Full-Stack</li>
-                        <li>CSS</li>
-                        <li>HTML</li>
-                      </ul>
-                      
-                      <!-- End of Knowledges -->
-                    </div>
-                    <!-- End of Skills & Certificates -->
-                  </div>
-
-                  <div class="white-space-50"></div>
-
-                  <!-- Certificates -->
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                      <div class="block-title">
-                        <h3>Certificates</h3>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="row">
-                    <!-- Certificate 1 -->
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="certificate-item clearfix">
-                        <div class="certi-logo">
-                          <img src="img/clients/SOA.png" alt="logo">
-                        </div>
-                        
-                        <div class="certi-content">
-                          <div class="certi-title">
-                            <h4>AWS Certified SysOps Administrator – Associate</h4>
-                          </div>
-                          <div class="certi-id">
-                            <span>SOA-C02</span>
-                          </div>
-                          <div class="certi-date">
-                            <span>February 2023</span>
-                          </div>
-                          <div class="certi-company">
-                            <span></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- End of Certificate 1 -->
-
-                    <!-- Certificate 1 -->
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="certificate-item clearfix">
-                        <div class="certi-logo">
-                          <img src="img/clients/DVA.png" alt="logo">
-                        </div>
-                        
-                        <div class="certi-content">
-                          <div class="certi-title">
-                            <h4>AWS Certified Developer - Associate</h4>
-                          </div>
-                          <div class="certi-id">
-                            <span>DVA-C02</span>
-                          </div>
-                          <div class="certi-date">
-                            <span>February 2023</span>
-                          </div>
-                          <div class="certi-company">
-                            <span></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- End of Certificate 1 -->
-
-                    <!-- Certificate 1 -->
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="certificate-item clearfix">
-                        <div class="certi-logo">
-                          <img src="img/clients/SAA.png" alt="logo">
-                        </div>
-                        
-                        <div class="certi-content">
-                          <div class="certi-title">
-                            <h4>AWS Certified Solutions Architect - Associate</h4>
-                          </div>
-                          <div class="certi-id">
-                            <span>SAA-C03</span>
-                          </div>
-                          <div class="certi-date">
-                            <span>January 2023</span>
-                          </div>
-                          <div class="certi-company">
-                            <span></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- End of Certificate 1 -->
-
-                    <!-- Certificate 2 -->
-                    <div class="col-xs-12 col-sm-6">
-                      <div class="certificate-item clearfix">
-                        <div class="certi-logo">
-                          <img src="img/clients/CLF.png" alt="logo">
-                        </div>
-                        
-                        <div class="certi-content">
-                          <div class="certi-title">
-                            <h4>AWS Certified Cloud Practitioner</h4>
-                          </div>
-                          <div class="certi-id">
-                            <span>CLF-C01</span>
-                          </div>
-                          <div class="certi-date">
-                            <span>December 2022</span>
-                          </div>
-                          <div class="certi-company">
-                            <span></span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- End of Certificate 2 -->
-
-                  </div>
-                  <!-- End of Certificates -->
-                </div>
-              </section>
-              <!-- End of Resume Subpage -->
-
-              <!-- Portfolio Subpage -->
-              <section data-id="portfolio" class="animated-section">
-                <div class="section-content">  
-                  <div class="page-title">
-                    <h2>Portfolio</h2>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                      <!-- Portfolio Content -->
-                      <div class="portfolio-content">
-
-                        <ul class="portfolio-filters">
-                          <li class="active">
-                            <a class="filter btn btn-sm btn-link" data-group="category_all">All</a>
-                          </li>
-                          <li>
-                            <a class="filter btn btn-sm btn-link" data-group="category_detailed">Detailed</a>
-                          </li>
-                        </ul>
-
-                        <!-- Portfolio Grid -->
-                        <div class="portfolio-grid three-columns">
-                          
-                          <figure class="item standard" data-groups='["category_all", "category_detailed"]'>
-                            <div class="portfolio-item-img">
-                              <img src="img/portfolio/ContainerWebsite.jpg" alt="Media Project 2" title="" />
-                              <a href="portfolio-2.html" class="ajax-page-load"></a>
-                            </div>
-
-                            <i class="far fa-file-alt"></i>
-                            <h4 class="name">ContainerWebsite</h4>
-                            <span class="category">AWS Cloud Project</span>
-                          </figure>
-
-                          <figure class="item standard" data-groups='["category_all", "category_detailed"]'>
-                            <div class="portfolio-item-img">
-                              <img src="img/portfolio/Momotaro.jpg" alt="Media Project 1" title="" />
-                              <a href="portfolio-1.html" class="ajax-page-load"></a>
-                            </div>
-
-                            <i class="far fa-file-alt"></i>
-                            <h4 class="name">MomotaroBot</h4>
-                            <span class="category">AWS Cloud Project</span>
-                          </figure>
-                        
-                      </div>
-                      <!-- End of Portfolio Content -->
-                    </div>
-                  </div>
-                </div>
-              </section>
-              <!-- End of Portfolio Subpage -->
-
-              <!-- Blog Subpage 
-              <section data-id="blog" class="animated-section">
-                <div class="section-content">  
-                  <div class="page-title">
-                    <h2>Blog</h2>
-                  </div>
-
-                  <div class="row">
-                    <div class="col-xs-12 col-sm-12">
-                      <div class="blog-masonry two-columns clearfix">
-                        
-                         Blog Post 1 
-                        <div class="item post-1">
-                          <div class="blog-card">
-                            <div class="media-block">
-                              <div class="category">
-                                <a href="#" title="View all posts in Design">Design</a>
-                              </div>
-                              <a href="blog-post-1.html">
-                                <img src="img/blog/blog_post_1.jpg" class="size-blog-masonry-image-two-c" alt="Why I Switched to Sketch For UI Design" title="" />
-                                <div class="mask"></div>
-                              </a>
-                            </div>
-                            <div class="post-info">
-                              <div class="post-date">05 Mar 2020</div>
-                              <a href="blog-post-1.html">
-                                <h4 class="blog-item-title">Still under construction</h4>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                         End of Blog Post 1 
-
-                         Blog Post 2 
-                        <div class="item post-2">
-                          <div class="blog-card">
-                            <div class="media-block">
-                              <div class="category">
-                                <a href="#" title="View all posts in UI">UI</a>
-                              </div>
-                              <a href="blog-post-1.html">
-                                <img src="img/blog/blog_post_2.jpg" class="size-blog-masonry-image-two-c" alt="Best Practices for Animated Progress Indicators" title="" />
-                                <div class="mask"></div>
-                              </a>
-                            </div>
-                            <div class="post-info">
-                              <div class="post-date">23 Feb 2020</div>
-                              <a href="blog-post-1.html">
-                                <h4 class="blog-item-title">Still under construction</h4>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                         End of Blog Post 2 
-
-                         Blog Post 3 
-                        <div class="item post-1">
-                          <div class="blog-card">
-                            <div class="media-block">
-                              <div class="category">
-                                <a href="#" title="View all posts in Design">Design</a>
-                              </div>
-                              <a href="blog-post-1.html">
-                                <img src="img/blog/blog_post_3.jpg" class="size-blog-masonry-image-two-c" alt="Designing the Perfect Feature Comparison Table" title="" />
-                                <div class="mask"></div>
-                              </a>
-                            </div>
-                            <div class="post-info">
-                              <div class="post-date">06 Feb 2020</div>
-                              <a href="blog-post-1.html">
-                                <h4 class="blog-item-title">Still under construction</h4>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                         End of Blog Post 3 -->
-
-                        <!-- Blog Post 4 
-                        <div class="item post-2">
-                          <div class="blog-card">
-                            <div class="media-block">
-                              <div class="category">
-                                <a href="#" title="View all posts in E-Commerce">UI</a>
-                              </div>
-                              <a href="blog-post-1.html">
-                                <img src="img/blog/blog_post_4.jpg" class="size-blog-masonry-image-two-c" alt="An Overview of E-Commerce Platforms" title="" />
-                                <div class="mask"></div>
-                              </a>
-                            </div>
-                            <div class="post-info">
-                              <div class="post-date">07 Jan 2020</div>
-                              <a href="blog-post-1.html">
-                                <h4 class="blog-item-title">Still under construction</h4>
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                         End of Blog Post 4 
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-               End of Blog Subpage -->
-
-              <!-- Contact Subpage -->
-              <section data-id="contact" class="animated-section">
-                <div class="section-content">  
-                  <div class="page-title">
-                    <h2>Contact</h2>
-                  </div>
-
-                  <div class="row">
-                    <!-- Contact Info -->
-                    <div class="col-xs-12 col-sm-4">
-                      <div class="lm-info-block gray-default">
-                        <i class="lnr lnr-map-marker"></i>
-                        <h4>Toronto</h4>
-                        <span class="lm-info-block-value"></span>
-                        <span class="lm-info-block-text"></span>
-                      </div>
-
-                      <div class="lm-info-block gray-default">
-                        <i class="lnr lnr-phone-handset"></i>
-                        <h4>416-880-7388</h4>
-                        <span class="lm-info-block-value"></span>
-                        <span class="lm-info-block-text"></span>
-                      </div>
-
-                      <div class="lm-info-block gray-default">
-                        <i class="lnr lnr-envelope"></i>
-                        <h4>kchenfs@gmail.com</h4>
-                        <span class="lm-info-block-value"></span>
-                        <span class="lm-info-block-text"></span>
-                      </div>
-
-                    </div>
-                    <!-- End of Contact Info -->
-
-                    <!-- Contact Form -->
-                    <div class="col-xs-12 col-sm-8">
-                      <div id="map" class="map"></div>
-                      <div class="block-title">
-                        <h3>How Can I <span>Help You?</span></h3>
-                      </div>
-
-                      <form id="contact_form" class="contact-form" action="contact_form/contact_form.php" method="post">
-
-                        <div class="messages"></div>
-
-                        <div class="controls two-columns">
-                          <div class="fields clearfix">
-                            <div class="left-column">
-                              <div class="form-group form-group-with-icon">
-                                <input id="form_name" type="text" name="name" class="form-control" placeholder="" required="required" data-error="Name is required.">
-                                <label>Full Name</label>
-                                <div class="form-control-border"></div>
-                                <div class="help-block with-errors"></div>
-                              </div>
-
-                              <div class="form-group form-group-with-icon">
-                                <input id="form_email" type="email" name="email" class="form-control" placeholder="" required="required" data-error="Valid email is required.">
-                                <label>Email Address</label>
-                                <div class="form-control-border"></div>
-                                <div class="help-block with-errors"></div>
-                              </div>
-
-                              <div class="form-group form-group-with-icon">
-                                <input id="form_subject" type="text" name="subject" class="form-control" placeholder="" required="required" data-error="Subject is required.">
-                                <label>Subject</label>
-                                <div class="form-control-border"></div>
-                                <div class="help-block with-errors"></div>
-                              </div>
-                            </div>
-                            <div class="right-column">
-                              <div class="form-group form-group-with-icon">
-                                <textarea id="form_message" name="message" class="form-control" placeholder="" rows="7" required="required" data-error="Please, leave me a message."></textarea>
-                                <label>Message</label>
-                                <div class="form-control-border"></div>
-                                <div class="help-block with-errors"></div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div class="g-recaptcha" data-sitekey="6LdqmCAUAAAAAMMNEZvn6g4W5e0or2sZmAVpxVqI" data-theme="dark"></div>
-      
-                          <input type="submit" class="button btn-send" value="Send message">
-                        </div>
-                      </form>
-                    </div>
-                    <!-- End of Contact Form -->
-                  </div>
-
-                </div>
-              </section>
-              <!-- End of Contact Subpage -->
-            </div>
-          </div>
-
-      </div>
-    </div>
-
-    <script src="js/jquery.min.js"></script>
-    <script src="js/modernizr.custom.js"></script>
-    <script src="js/animating.js"></script>
-
-    <script src="js/imagesloaded.pkgd.min.js"></script>
-    <script src='https://www.google.com/recaptcha/api.js'></script>
-
-    <script src='js/perfect-scrollbar.min.js'></script>
-    <script src='js/jquery.shuffle.min.js'></script>
-    <script src='js/masonry.pkgd.min.js'></script>
-    <script src='js/owl.carousel.min.js'></script>
-    <script src="js/jquery.magnific-popup.min.js"></script>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDmQIhS7C9hRkOyRz5anKYC57Ru52Cx4Dw"></script>
-    <script src="js/jquery.googlemap.js"></script>
-    <script src="js/validator.js"></script>
-    <script src="js/main.js"></script>
-  </body>
+        // Observe all sections for animation
+        document.querySelectorAll('section').forEach(section => {
+            section.style.opacity = '0';
+            section.style.transform = 'translateY(20px)';
+            section.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(section);
+        });
+    </script>
+</body>
 </html>
