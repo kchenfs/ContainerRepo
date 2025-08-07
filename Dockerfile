@@ -7,6 +7,6 @@ WORKDIR /usr/share/nginx/html
 # Copy the ZIP file into the container
 COPY WebsiteTemplate /usr/share/nginx/html/
 
-# Expose port 8081 for the web server
-EXPOSE 8081
+# Expose port 8000 for the web server
+EXPOSE 80
 
