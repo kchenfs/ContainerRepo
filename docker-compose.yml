@@ -2,6 +2,6 @@ services:
   web:
     build: .
     ports:
-      - "3000:80"   # Map port 8000 on the host to port 80 in the container
+      - "4000:80"   # Map port 8000 on the host to port 80 in the container
     volumes:
       - ./WebsiteTemplate:/usr/share/nginx/html  # Bind mount the local directory to the container
