@@ -1,3 +1,8 @@
+import {
+  id = "WebsiteCounterLambda"
+  to = aws_lambda_function.website_counter_lambda
+}
+
 resource "aws_lambda_function" "website_counter_lambda" {
   function_name = "WebsiteCounterLambda"
   handler       = "lambda_function.lambda_handler"
@@ -11,6 +16,11 @@ resource "aws_lambda_function" "website_counter_lambda" {
       DYNAMODB_TABLE_NAME = aws_dynamodb_table.website_counter.name
     }
   }
+}
+
+import {
+  id = "lambda_execution_role"
+  to = aws_iam_role.lambda_execution_role
 }
 
 resource "aws_iam_role" "lambda_execution_role" {
