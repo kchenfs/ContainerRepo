@@ -1,0 +1,44 @@
+name: Deploy Frontend to S3
+
+on:
+  push:
+    branches:
+      - feature1  # Only runs on push to feature1 branch
+    paths:
+      - 'frontend/**'  # Only trigger when files in frontend directory change
+
+jobs:
+  deploy:
+    name: Deploy to S3
+    runs-on: ubuntu-latest
+    
+    # Only run deployment on push to feature1 branch
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature1'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Change to your bucket's region if different
+          
+    
+      - name: Sync files to S3
+        run: |
+          aws s3 sync frontend/ s3://static-website-bucket-resources-ken \
+            --delete
+        # If you have a build process, change 'frontend/' to 'frontend/build/' or 'frontend/dist/'
+        
+      - name: Invalidate CloudFront cache (optional)
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/*"
+        # Remove this step if you don't want to invalidate CloudFront cache
+        # or if you don't have a CloudFront distribution
+
+  
