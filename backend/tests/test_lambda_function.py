@@ -2,7 +2,7 @@
 import json
 import pytest
 import boto3
-from moto import mock_dynamodb
+from moto.dynamodb import mock_dynamodb
 from unittest.mock import patch, MagicMock
 import sys
 import os
