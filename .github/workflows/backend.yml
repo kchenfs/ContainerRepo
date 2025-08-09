@@ -1,0 +1,173 @@
+name: Lambda CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - feature1  # Add any other branches you want to deploy from
+    paths:
+      - 'backend/**'  # Add other backend paths if needed
+
+env:
+  PYTHON_VERSION: '3.11'  # Change to your Lambda runtime version
+  LAMBDA_FUNCTION_NAME: 'WebsiteCounterLambda'  # Update with your actual function name
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install production dependencies
+          if [ -f lambda/requirements.txt ]; then
+            pip install -r lambda/requirements.txt
+          fi
+          # Install test dependencies
+          if [ -f lambda/requirements-dev.txt ]; then
+            pip install -r lambda/requirements-dev.txt
+          else
+            # Install common testing packages if no dev requirements file
+            pip install pytest pytest-cov moto boto3
+          fi
+          
+      - name: Run unit tests
+        working-directory: ./lambda
+        run: |
+          # Run tests with coverage
+          python -m pytest tests/ -v --cov=. --cov-report=xml --cov-report=term-missing
+          
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./lambda/coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+        # Remove this step if you don't want coverage reporting
+        
+      - name: Lint code with flake8
+        working-directory: ./lambda
+        run: |
+          # Install flake8 if not in requirements
+          pip install flake8
+          # Stop the build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all errors as warnings
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run security scan with bandit
+        run: |
+          pip install bandit
+          bandit -r lambda/ -f json -o bandit-report.json || true
+          
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-scan-results
+          path: bandit-report.json
+
+  build-and-deploy:
+    name: Build and Deploy Lambda
+    runs-on: ubuntu-latest
+    needs: [test, security-scan]
+    
+    # Only deploy on push to main/develop branches, not on PRs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/feature1'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1  # Change to your Lambda's region
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Create deployment package
+          mkdir -p deployment-package
+          
+          # Install dependencies to deployment package if requirements.txt exists
+          if [ -f lambda/requirements.txt ]; then
+            pip install -r lambda/requirements.txt -t deployment-package/
+          fi
+          
+      - name: Create deployment package
+        run: |
+          # Copy Lambda function code
+          cp -r lambda/* deployment-package/
+          
+          # Remove test files and unnecessary files from deployment package
+          rm -rf deployment-package/tests/
+          rm -rf deployment-package/__pycache__/
+          rm -rf deployment-package/*.pyc
+          rm -rf deployment-package/requirements*.txt
+          rm -rf deployment-package/.pytest_cache/
+          
+          # Create ZIP file
+          cd deployment-package
+          zip -r ../lambda-deployment.zip .
+          cd ..
+          
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+            --zip-file fileb://lambda-deployment.zip
+            
+      - name: Update Lambda configuration (if needed)
+        run: |
+          # Update function configuration if needed
+          # aws lambda update-function-configuration \
+          #   --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+          #   --timeout 30 \
+          #   --memory-size 256
+          
+      - name: Run integration tests (optional)
+        run: |
+          # Install test dependencies
+          pip install boto3 pytest
+          
+          # Run integration tests against deployed function
+          # python -m pytest integration-tests/ -v
+          # Remove this step if you don't have integration tests
+          
+      - name: Deployment notification
+        run: |
+          echo "✅ Lambda function ${{ env.LAMBDA_FUNCTION_NAME }} deployed successfully!"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
